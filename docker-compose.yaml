@@ -1,0 +1,21 @@
+version: '3'
+
+services:
+  db:
+    image: postgres
+    restart: always
+    container_name: db_keeper
+    environment:
+      POSTGRES_PASSWORD: qwerty
+      POSTGRES_USER: postgres
+    volumes:
+      - /var/lib/postgresql/data
+    ports:
+      - "5436:5432"
+
+
+  adminer:
+    image: adminer
+    restart: always
+    ports:
+      - 8000:8080
