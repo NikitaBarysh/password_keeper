@@ -25,14 +25,6 @@ func InitLogger() *Logger {
 	return &Logger{Log: log}
 }
 
-func TestLogger() *Logger {
-	logger, err := zap.NewDevelopment()
-	if err != nil {
-		panic(err)
-	}
-	return &Logger{Log: logger}
-}
-
 func (l *Logger) Info(msg string, opt ...any) {
 	l.Log.Sugar().Infow(fmt.Sprintf(msg, opt...))
 }

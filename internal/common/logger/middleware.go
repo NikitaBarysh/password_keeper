@@ -47,7 +47,7 @@ func (l *loggingResponseWriter) Hijacking() (net.Conn, *bufio.ReadWriter, error)
 
 func (l *loggingResponseWriter) Flush() {
 	if f, ok := l.ResponseWriter.(http.Flusher); ok {
-		if l.ResponseWriter. == 0 {
+		if l.responseData.status == 0 {
 			l.responseData.status = 200
 		}
 		f.Flush()

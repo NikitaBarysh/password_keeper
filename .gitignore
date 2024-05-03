@@ -1,0 +1,11 @@
+.env
+
+.DS_store
+
+./database
+
+./private.rsa
+
+./public.rsa
+
+./project_log.log

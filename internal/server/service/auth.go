@@ -9,7 +9,6 @@ import (
 	"github.com/golang-jwt/jwt/v4"
 	"password_keeper/config/server"
 	"password_keeper/internal/common/entity"
-	"password_keeper/internal/common/logger"
 	"password_keeper/internal/common/models"
 	"password_keeper/internal/server/repository"
 )
@@ -24,16 +23,14 @@ type Claims struct {
 }
 
 type AuthService struct {
-	rep     *repository.Repository
-	logging *logger.Logger
-	cfg     *server.ServConfig
+	rep *repository.Repository
+	cfg *server.ServConfig
 }
 
-func NewAuthService(newRep *repository.Repository, log *logger.Logger, cfg *server.ServConfig) *AuthService {
+func NewAuthService(newRep *repository.Repository, cfg *server.ServConfig) *AuthService {
 	return &AuthService{
-		rep:     newRep,
-		logging: log,
-		cfg:     cfg,
+		rep: newRep,
+		cfg: cfg,
 	}
 }
 
@@ -41,7 +38,6 @@ func (s *AuthService) CreateUser(ctx context.Context, user entity.User) (int, er
 	user.Password = s.generatePasswordHash(user.Password)
 	id, err := s.rep.AuthorizationRepository.SetUserDB(ctx, user)
 	if err != nil {
-		s.logging.Error("err to get id from DB: ", err)
 		return 0, fmt.Errorf("err to get id from DB: %w", err)
 	}
 	return id, nil
@@ -51,7 +47,6 @@ func (s *AuthService) ValidateLogin(ctx context.Context, user entity.User) error
 	user.Password = s.generatePasswordHash(user.Password)
 	id, err := s.rep.AuthorizationRepository.GetUserFromDB(ctx, user)
 	if err != nil {
-		s.logging.Error("err to get user from DB: ", err)
 		return fmt.Errorf("err to get user: %w", err)
 	}
 
@@ -66,7 +61,6 @@ func (s *AuthService) CheckData(ctx context.Context, user entity.User) (int, err
 	user.Password = s.generatePasswordHash(user.Password)
 	id, err := s.rep.AuthorizationRepository.GetUserFromDB(ctx, user)
 	if err != nil {
-		s.logging.Error("err to get user from DB: ", err)
 		return 0, fmt.Errorf("err to get user fro DB: %w", err)
 	}
 
@@ -83,7 +77,6 @@ func (s *AuthService) GenerateJWTToken(userID int) (string, error) {
 
 	tokenString, err := token.SignedString([]byte(s.cfg.SecretKey))
 	if err != nil {
-		s.logging.Error("err to generate JWT token: ", err)
 		return "", fmt.Errorf("err to generate token: %w", err)
 	}
 
@@ -95,19 +88,16 @@ func (s *AuthService) GetUserIDFromToken(tokenString string) int {
 
 	token, err := jwt.ParseWithClaims(tokenString, claims, func(t *jwt.Token) (interface{}, error) {
 		if _, ok := t.Method.(*jwt.SigningMethodHMAC); !ok {
-			s.logging.Error("Unexpected signing")
 			return nil, fmt.Errorf("unexpected signing method: %v", t.Header["alg"])
 		}
 		return []byte(s.cfg.SecretKey), nil
 	})
 
 	if err != nil {
-		s.logging.Error("Err to get UserID from JWT token:", err)
 		return -1
 	}
 
 	if !token.Valid {
-		s.logging.Error("Token is not valid:", err)
 		return -1
 	}
 

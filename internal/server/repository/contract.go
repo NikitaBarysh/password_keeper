@@ -16,9 +16,9 @@ type AuthorizationRepository interface {
 }
 
 type DataRepositoryInterface interface {
-	SetRepData(ctx context.Context, id int, text []byte, eventType string) error
-	GetRepData(ctx context.Context, id int, eventType string) ([]byte, error)
-	DeleteRepData(ctx context.Context, id int, eventType string) error
+	SetRepData(id int, text []byte, eventType string) error
+	GetRepData(id int, eventType string) ([]byte, error)
+	DeleteRepData(id int, eventType string) error
 }
 
 type Repository struct {

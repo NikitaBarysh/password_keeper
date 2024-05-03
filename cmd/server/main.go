@@ -39,13 +39,13 @@ func main() {
 
 	newRepository := repository.NewRepository(db, logging)
 	newService := service.NewService(newRepository, logging, cfg)
-	newHandler := handler.NewHandler(newService, logging)
+	newHandler := handler.NewHandler(newService)
 
 	newHandler.Register(router)
 
 	srv := new(app.Server)
 	go func() {
-		if err := srv.Run(cfg.Endpoint, router); err != nil {
+		if err = srv.Run(cfg.Endpoint, router); err != nil {
 			logging.Fatal("Err to start server: ", err)
 		}
 	}()

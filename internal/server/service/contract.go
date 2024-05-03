@@ -25,14 +25,14 @@ type AuthorizationService interface {
 }
 
 type DataServiceInterface interface {
-	SetData(ctx context.Context, id int, text []byte, eventType string) error
-	GetData(ctx context.Context, id int, eventType string) ([]byte, error)
-	DeleteData(ctx context.Context, id int, eventType string) error
+	SetData(id int, text []byte, eventType string) error
+	GetData(id int, eventType string) ([]byte, error)
+	DeleteData(id int, eventType string) error
 }
 
 func NewService(rep *repository.Repository, log *logger.Logger, cfg *server.ServConfig) *Service {
 	return &Service{
-		AuthorizationService: NewAuthService(rep, log, cfg),
+		AuthorizationService: NewAuthService(rep, cfg),
 		DataServiceInterface: NewDataService(rep, log),
 	}
 }

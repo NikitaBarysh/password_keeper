@@ -132,44 +132,44 @@ func (m *MockDataServiceInterface) EXPECT() *MockDataServiceInterfaceMockRecorde
 }
 
 // DeleteData mocks base method.
-func (m *MockDataServiceInterface) DeleteData(ctx context.Context, id int, eventType string) error {
+func (m *MockDataServiceInterface) DeleteData(id int, eventType string) error {
 	m.ctrl.T.Helper()
-	ret := m.ctrl.Call(m, "DeleteData", ctx, id, eventType)
+	ret := m.ctrl.Call(m, "DeleteData", id, eventType)
 	ret0, _ := ret[0].(error)
 	return ret0
 }
 
 // DeleteData indicates an expected call of DeleteData.
-func (mr *MockDataServiceInterfaceMockRecorder) DeleteData(ctx, id, eventType interface{}) *gomock.Call {
+func (mr *MockDataServiceInterfaceMockRecorder) DeleteData(id, eventType interface{}) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "DeleteData", reflect.TypeOf((*MockDataServiceInterface)(nil).DeleteData), ctx, id, eventType)
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "DeleteData", reflect.TypeOf((*MockDataServiceInterface)(nil).DeleteData), id, eventType)
 }
 
 // GetData mocks base method.
-func (m *MockDataServiceInterface) GetData(ctx context.Context, id int, eventType string) ([]byte, error) {
+func (m *MockDataServiceInterface) GetData(id int, eventType string) ([]byte, error) {
 	m.ctrl.T.Helper()
-	ret := m.ctrl.Call(m, "GetData", ctx, id, eventType)
+	ret := m.ctrl.Call(m, "GetData", id, eventType)
 	ret0, _ := ret[0].([]byte)
 	ret1, _ := ret[1].(error)
 	return ret0, ret1
 }
 
 // GetData indicates an expected call of GetData.
-func (mr *MockDataServiceInterfaceMockRecorder) GetData(ctx, id, eventType interface{}) *gomock.Call {
+func (mr *MockDataServiceInterfaceMockRecorder) GetData(id, eventType interface{}) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetData", reflect.TypeOf((*MockDataServiceInterface)(nil).GetData), ctx, id, eventType)
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetData", reflect.TypeOf((*MockDataServiceInterface)(nil).GetData), id, eventType)
 }
 
 // SetData mocks base method.
-func (m *MockDataServiceInterface) SetData(ctx context.Context, id int, text []byte, eventType string) error {
+func (m *MockDataServiceInterface) SetData(id int, text []byte, eventType string) error {
 	m.ctrl.T.Helper()
-	ret := m.ctrl.Call(m, "SetData", ctx, id, text, eventType)
+	ret := m.ctrl.Call(m, "SetData", id, text, eventType)
 	ret0, _ := ret[0].(error)
 	return ret0
 }
 
 // SetData indicates an expected call of SetData.
-func (mr *MockDataServiceInterfaceMockRecorder) SetData(ctx, id, text, eventType interface{}) *gomock.Call {
+func (mr *MockDataServiceInterfaceMockRecorder) SetData(id, text, eventType interface{}) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "SetData", reflect.TypeOf((*MockDataServiceInterface)(nil).SetData), ctx, id, text, eventType)
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "SetData", reflect.TypeOf((*MockDataServiceInterface)(nil).SetData), id, text, eventType)
 }

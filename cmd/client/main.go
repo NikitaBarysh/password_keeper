@@ -31,7 +31,7 @@ func main() {
 
 	cfg := client.NewClient()
 
-	sen, err := sender.NewSender(logging, cfg)
+	sen, err := sender.NewSender(cfg)
 	if err != nil {
 		logging.Error(err.Error())
 	}
