@@ -3,19 +3,16 @@ package service
 import (
 	"fmt"
 
-	"password_keeper/internal/common/logger"
 	"password_keeper/internal/server/repository"
 )
 
 type DataService struct {
-	rep     *repository.Repository
-	logging *logger.Logger
+	rep *repository.Repository
 }
 
-func NewDataService(newRep *repository.Repository, logger *logger.Logger) *DataService {
+func NewDataService(newRep *repository.Repository) *DataService {
 	return &DataService{
-		rep:     newRep,
-		logging: logger,
+		rep: newRep,
 	}
 }
 

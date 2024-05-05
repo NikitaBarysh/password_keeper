@@ -25,7 +25,7 @@ func main() {
 	ctx, cancel := context.WithCancel(context.Background())
 	defer cancel()
 
-	db, err := repository.InitDataBase(ctx, cfg.DataBaseDSN, logging)
+	db, err := repository.InitDataBase(ctx, cfg.DataBaseDSN)
 	if err != nil {
 		logging.Fatal("get err from DB")
 	}
@@ -37,8 +37,8 @@ func main() {
 
 	router := chi.NewRouter()
 
-	newRepository := repository.NewRepository(db, logging)
-	newService := service.NewService(newRepository, logging, cfg)
+	newRepository := repository.NewRepository(db)
+	newService := service.NewService(newRepository, cfg)
 	newHandler := handler.NewHandler(newService)
 
 	newHandler.Register(router)

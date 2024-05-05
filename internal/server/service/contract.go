@@ -5,7 +5,6 @@ import (
 
 	"password_keeper/config/server"
 	"password_keeper/internal/common/entity"
-	"password_keeper/internal/common/logger"
 	"password_keeper/internal/server/repository"
 )
 
@@ -30,9 +29,9 @@ type DataServiceInterface interface {
 	DeleteData(id int, eventType string) error
 }
 
-func NewService(rep *repository.Repository, log *logger.Logger, cfg *server.ServConfig) *Service {
+func NewService(rep *repository.Repository, cfg *server.ServConfig) *Service {
 	return &Service{
 		AuthorizationService: NewAuthService(rep, cfg),
-		DataServiceInterface: NewDataService(rep, log),
+		DataServiceInterface: NewDataService(rep),
 	}
 }

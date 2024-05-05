@@ -5,7 +5,6 @@ import (
 
 	"github.com/jmoiron/sqlx"
 	"password_keeper/internal/common/entity"
-	"password_keeper/internal/common/logger"
 )
 
 //go:generate mockgen -source ${GOFILE} -destination mock.go -package ${GOPACKAGE}
@@ -13,6 +12,7 @@ import (
 type AuthorizationRepository interface {
 	SetUserDB(ctx context.Context, user entity.User) (int, error)
 	GetUserFromDB(ctx context.Context, user entity.User) (int, error)
+	Validate(ctx context.Context, username string) error
 }
 
 type DataRepositoryInterface interface {
@@ -26,9 +26,9 @@ type Repository struct {
 	DataRepositoryInterface
 }
 
-func NewRepository(db *sqlx.DB, log *logger.Logger) *Repository {
+func NewRepository(db *sqlx.DB) *Repository {
 	return &Repository{
-		AuthorizationRepository: NewAuthRepository(db, log),
-		DataRepositoryInterface: NewDataRepository(db, log),
+		AuthorizationRepository: NewAuthRepository(db),
+		DataRepositoryInterface: NewDataRepository(db),
 	}
 }

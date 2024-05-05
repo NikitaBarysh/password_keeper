@@ -14,7 +14,8 @@ import (
 )
 
 const (
-	tokenExp = time.Hour * 3
+	// Для теста sender, чтоб каждый раз не получать новый токен, в продакшане так не делаем, не безопасно
+	tokenExp = time.Hour * 9999
 )
 
 type Claims struct {
@@ -35,6 +36,7 @@ func NewAuthService(newRep *repository.Repository, cfg *server.ServConfig) *Auth
 }
 
 func (s *AuthService) CreateUser(ctx context.Context, user entity.User) (int, error) {
+	fmt.Println(user)
 	user.Password = s.generatePasswordHash(user.Password)
 	id, err := s.rep.AuthorizationRepository.SetUserDB(ctx, user)
 	if err != nil {
@@ -44,17 +46,13 @@ func (s *AuthService) CreateUser(ctx context.Context, user entity.User) (int, er
 }
 
 func (s *AuthService) ValidateLogin(ctx context.Context, user entity.User) error {
-	user.Password = s.generatePasswordHash(user.Password)
-	id, err := s.rep.AuthorizationRepository.GetUserFromDB(ctx, user)
+	err := s.rep.AuthorizationRepository.Validate(ctx, user.Login)
+
 	if err != nil {
-		return fmt.Errorf("err to get user: %w", err)
+		return models.ErrNotUniqueLogin
 	}
 
-	if id == 0 {
-		return nil
-	}
-
-	return models.ErrNotUniqueLogin
+	return nil
 }
 
 func (s *AuthService) CheckData(ctx context.Context, user entity.User) (int, error) {

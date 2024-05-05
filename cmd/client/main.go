@@ -45,7 +45,7 @@ func main() {
 		case register:
 			loginUser := read(login)
 			passwordUser := read(password)
-			_, err := sen.PostUserRequest(loginUser, passwordUser, register)
+			err := sen.PostUserRequest(loginUser, passwordUser, register)
 			if err != nil {
 				logging.Error(err.Error())
 				continue
@@ -54,7 +54,7 @@ func main() {
 		case login:
 			loginUser := read(login)
 			passwordUser := read(password)
-			_, err := sen.PostUserRequest(loginUser, passwordUser, login)
+			err := sen.PostUserRequest(loginUser, passwordUser, login)
 			if err != nil {
 				logging.Error(err.Error())
 				continue

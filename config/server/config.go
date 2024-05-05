@@ -52,7 +52,7 @@ func NewServConfig(option ...Option) *ServConfig {
 	cfg := &ServConfig{
 		Endpoint:    "8080",
 		DataBaseDSN: "postgres://postgres:qwerty@localhost:5436/postgres?sslmode=disable",
-		Salt:        "2-jvpiwjvsajVP=IR",
+		Salt:        "cokdnvosavnsdfm3jr2034v=0wjv=4092h3jv",
 		SecretKey:   "ewfwvfsvwgf42",
 	}
 

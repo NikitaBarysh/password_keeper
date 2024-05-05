@@ -26,14 +26,14 @@ var in = bufio.NewReader(os.Stdin)
 const timeOut = 300 * time.Second
 
 type Sender struct {
-	//logging       *logger.Logger
 	client     *http.Client
-	cfg        *client.ClientConfig
+	hashKey    string
 	encrypt    *encryption.Encryptor
 	addData    chan []byte
 	getData    chan []byte
 	deleteData chan []byte
 	token      string
+	address    string
 	//sendInterface SendInterface
 }
 
@@ -48,22 +48,20 @@ func NewSender(cfg *client.ClientConfig) (*Sender, error) {
 
 	enc, err := encryption.InitEncryptor(cfg.PublicKeyPath)
 	if err != nil {
-		//logging.Error("Error initializing encryption")
 		return nil, err
 	}
 	return &Sender{
-		//logging:       logging,
 		client:     newClient,
 		encrypt:    enc,
-		cfg:        cfg,
+		hashKey:    cfg.HashKey,
 		addData:    addData,
 		getData:    getData,
 		deleteData: deleteData,
-		//sendInterface: sendInterface,
+		address:    cfg.Url,
 	}, nil
 }
 
-func (s *Sender) PostUserRequest(login, password, path string) ([]byte, error) {
+func (s *Sender) PostUserRequest(login, password, path string) error {
 	body := entity.User{
 		Login:    login,
 		Password: password,
@@ -71,61 +69,48 @@ func (s *Sender) PostUserRequest(login, password, path string) ([]byte, error) {
 
 	b, err := s.encryptUser(body)
 	if err != nil {
-		//s.logging.Error("Error encrypting user")
-		return nil, err
+		return err
 	}
 
-	url := fmt.Sprintf("http://localhost:8080/%s", path) // 	TODO улучшить url
+	url := fmt.Sprintf("http://%s/%s", s.address, path)
 
 	req, err := http.NewRequest(http.MethodPost, url, bytes.NewBuffer(b))
 	if err != nil {
-		//s.logging.Error("Failed to register user")
-		return nil, err
+		return err
 	}
 
 	resp, err := s.client.Do(req)
 	if err != nil {
-		//s.logging.Error("Failed to register user")
-		return nil, err
+		return err
 	}
 
 	if resp.StatusCode/100 != 2 {
-		//s.logging.Error("StatusCode not 200")
-		return nil, errors.New("Failed to register user ")
+		return errors.New("Failed to register user ")
 	}
 
 	err = s.parseAuthToken(resp)
 	if err != nil {
-		//s.logging.Error("Failed to parse auth token")
+		return err
 	}
 
-	respBody, err := io.ReadAll(resp.Body)
-	if err != nil {
-		//s.logging.Error("Failed to read response body")
-		return nil, errors.New("Failed to register user ")
-	}
-
-	return respBody, nil
+	return nil
 }
 
 func (s *Sender) PostDataRequest(data, eventType string) error {
 	err := s.checker()
 	if err != nil {
-		//s.logging.Error(err.Error())
 		return err
 	}
 
-	b, err := encryption.SymmetricEncrypt([]byte(data), s.cfg.HashKey)
+	b, err := encryption.SymmetricEncrypt([]byte(data), s.hashKey)
 	if err != nil {
-		//s.logging.Error("Error encrypting data")
 		return err
 	}
 
-	URL := fmt.Sprintf("http://localhost:8080/api/set/%s", eventType)
+	URL := fmt.Sprintf("http://%s/api/set/%s", s.address, eventType)
 
 	req, err := http.NewRequest(http.MethodPost, URL, bytes.NewBuffer(b))
 	if err != nil {
-		//s.logging.Error("Failed to make request to POST")
 		return err
 	}
 
@@ -133,12 +118,10 @@ func (s *Sender) PostDataRequest(data, eventType string) error {
 
 	resp, err := s.client.Do(req)
 	if err != nil {
-		//s.logging.Error("Failed to add data")
 		return err
 	}
 
 	if resp.StatusCode/100 != 2 {
-		//s.logging.Error("StatusCode not 200")
 		return errors.New("Status code not 200 ")
 	}
 
@@ -146,11 +129,10 @@ func (s *Sender) PostDataRequest(data, eventType string) error {
 }
 
 func (s *Sender) GetDataRequest(eventType string) ([]byte, error) {
-	url := fmt.Sprintf("http://localhost:8080/api/get/%s", eventType)
+	url := fmt.Sprintf("http://%s/api/get/%s", s.address, eventType)
 
 	req, err := http.NewRequest(http.MethodGet, url, nil)
 	if err != nil {
-		//s.logging.Error("Failed to make request to GET")
 		return nil, err
 	}
 
@@ -158,24 +140,20 @@ func (s *Sender) GetDataRequest(eventType string) ([]byte, error) {
 
 	resp, err := s.client.Do(req)
 	if err != nil {
-		//s.logging.Error("Failed to get data")
 		return nil, err
 	}
 
 	if resp.StatusCode/100 != 2 {
-		//s.logging.Error("StatusCode not 200")
 		return nil, errors.New("Status code not 200 ")
 	}
 
 	b, err := io.ReadAll(resp.Body)
 	if err != nil {
-		//s.logging.Error("Failed to read response body")
 		return nil, fmt.Errorf("Failed to read response body %w ", err)
 	}
 
-	data, err := encryption.SymmetricDecrypt(b, s.cfg.HashKey)
+	data, err := encryption.SymmetricDecrypt(b, s.hashKey)
 	if err != nil {
-		//s.logging.Error("Error decrypting data")
 		return nil, fmt.Errorf("Error decrypting data %w ", err)
 	}
 
@@ -183,34 +161,31 @@ func (s *Sender) GetDataRequest(eventType string) ([]byte, error) {
 }
 
 func (s *Sender) DeleteDataRequest(eventType string) error {
-	url := fmt.Sprintf("http://localhost:8080/api/delete/%s", eventType)
+	url := fmt.Sprintf("http://%s/api/delete/%s", s.address, eventType)
 
 	req, err := http.NewRequest(http.MethodDelete, url, nil)
 	if err != nil {
-		//s.logging.Error("Failed to make request to DELETE")
 		return err
 	}
 
 	req.Header.Set("Authorization", s.token)
 
-	_, err = s.client.Do(req)
+	resp, err := s.client.Do(req)
 	if err != nil {
-		//s.logging.Error("Failed to delete data")
 		return err
 	}
 
-	//if resp.StatusCode/100 != 2 {
-	//	//s.logging.Error("StatusCode not 200")
-	//	return errors.New("Status code not 200 ")
-	//}
+	if resp.StatusCode/100 != 2 {
+		return errors.New("Status code not 200 ")
+	}
 
 	return nil
 }
 
-func (s *Sender) ConnectWs() {
+func (s *Sender) ConnectWs() error {
 	err := s.checker()
 	if err != nil {
-		//s.logging.Error("Empty auth token")
+		return err
 	}
 
 	header := http.Header{}
@@ -220,8 +195,7 @@ func (s *Sender) ConnectWs() {
 
 	c, _, err := websocket.DefaultDialer.Dial(URL.String(), header)
 	if err != nil {
-		//s.logging.Error(err.Error())
-		return
+		return err
 	}
 	defer c.Close()
 
@@ -235,23 +209,23 @@ func (s *Sender) ConnectWs() {
 		case inData := <-s.addData:
 			err = c.WriteMessage(websocket.TextMessage, inData)
 			if err != nil {
-				//s.logging.Error("Failed to write payload")
+				break
 			}
 			go s.getInput()
 		case get := <-s.getData:
 			err = c.WriteMessage(websocket.TextMessage, get)
 			if err != nil {
-				//s.logging.Error("Failed to write payload")
+				break
 			}
 
 			_, msg, err := c.ReadMessage()
 			if err != nil {
-				//s.logging.Error("Failed to read payload")
+				break
 			}
 
-			b, err := encryption.SymmetricDecrypt(msg, s.cfg.HashKey)
+			b, err := encryption.SymmetricDecrypt(msg, s.hashKey)
 			if err != nil {
-				//s.logging.Error("Error decrypt data")
+				break
 			}
 
 			fmt.Println(string(b))
@@ -260,17 +234,15 @@ func (s *Sender) ConnectWs() {
 		case del := <-s.deleteData:
 			err = c.WriteMessage(websocket.TextMessage, del)
 			if err != nil {
-				//s.logging.Error("Failed to delete ")
+				break
 			}
 			go s.getInput()
 		case <-interrupt:
-			//s.logging.Info("Caught interrupt signal - quitting!")
 			err = c.WriteMessage(websocket.CloseMessage, websocket.FormatCloseMessage(websocket.CloseNormalClosure, ""))
 			if err != nil {
-				//s.logging.Error("Failed to close connection")
-				return
+				return err
 			}
-			return
+			return nil
 		}
 	}
 }
@@ -285,7 +257,7 @@ func (s *Sender) getInput() {
 		str := entity.WebDataMSG{Action: "add", Payload: []byte(data), EventType: eventType}
 		res, err := s.pack(str)
 		if err != nil {
-			//s.logging.Error("Failed to pack data for adding") //  TODO улучшить обработку ошибок
+			break
 		}
 		s.addData <- res
 	case "get":
@@ -293,7 +265,7 @@ func (s *Sender) getInput() {
 		str := entity.WebDataMSG{Action: "get", EventType: eventType}
 		res, err := s.pack(str)
 		if err != nil {
-			//s.logging.Error("Failed to pack data for getting")
+			break
 		}
 		s.getData <- res
 	case "delete":
@@ -301,14 +273,14 @@ func (s *Sender) getInput() {
 		str := entity.WebDataMSG{Action: "delete", EventType: eventType}
 		res, err := s.pack(str)
 		if err != nil {
-			//s.logging.Error("Failed to pack data for delete")
+			break
 		}
 		s.deleteData <- res
 	}
 }
 
 func (s *Sender) pack(data entity.WebDataMSG) ([]byte, error) {
-	encData, err := encryption.SymmetricEncrypt(data.Payload, s.cfg.HashKey)
+	encData, err := encryption.SymmetricEncrypt(data.Payload, s.hashKey)
 	if err != nil {
 		return nil, fmt.Errorf("Error encrypting data ")
 	}
@@ -326,13 +298,11 @@ func (s *Sender) pack(data entity.WebDataMSG) ([]byte, error) {
 func (s *Sender) encryptUser(user entity.User) ([]byte, error) {
 	b, err := json.Marshal(user)
 	if err != nil {
-		//s.logging.Error("Failed to marshal user to JSON")
 		return nil, fmt.Errorf("Failed to marshal user to JSON ")
 	}
 
 	data, err := s.encrypt.Encrypt(b)
 	if err != nil {
-		//s.logging.Error("Failed to encrypt user")
 		return nil, fmt.Errorf("Failed to encrypt user ")
 	}
 

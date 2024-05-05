@@ -8,6 +8,10 @@ import (
 )
 
 func SymmetricEncrypt(src []byte, hashKey string) ([]byte, error) {
+	if len(hashKey) == 0 {
+		return nil, fmt.Errorf("hashKey is required")
+	}
+
 	key := sha256.Sum256([]byte(hashKey))
 
 	aesblock, err := aes.NewCipher(key[:])

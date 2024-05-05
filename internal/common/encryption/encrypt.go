@@ -34,6 +34,7 @@ func InitEncryptor(file string) (*Encryptor, error) {
 }
 
 func (m *Encryptor) Encrypt(msg []byte) ([]byte, error) {
+
 	hash := sha512.New()
 	random := rand.Reader
 

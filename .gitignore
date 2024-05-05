@@ -2,10 +2,17 @@
 
 .DS_store
 
-./database
+database/
 
-./private.rsa
+private.rsa
 
-./public.rsa
+public.rsa
 
-./project_log.log
+project_log.log
+
+
+.idea
+.vscode
+
+
+.DS_Store

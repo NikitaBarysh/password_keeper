@@ -34,9 +34,10 @@ func (m *MockSendInterface) EXPECT() *MockSendInterfaceMockRecorder {
 }
 
 // ConnectWs mocks base method.
-func (m *MockSendInterface) ConnectWs() {
+func (m *MockSendInterface) ConnectWs() error {
 	m.ctrl.T.Helper()
 	m.ctrl.Call(m, "ConnectWs")
+	return nil
 }
 
 // ConnectWs indicates an expected call of ConnectWs.
@@ -89,12 +90,11 @@ func (mr *MockSendInterfaceMockRecorder) PostDataRequest(data, eventType interfa
 }
 
 // PostUserRequest mocks base method.
-func (m *MockSendInterface) PostUserRequest(login, password, path string) ([]byte, error) {
+func (m *MockSendInterface) PostUserRequest(login, password, path string) error {
 	m.ctrl.T.Helper()
 	ret := m.ctrl.Call(m, "PostUserRequest", login, password, path)
-	ret0, _ := ret[0].([]byte)
-	ret1, _ := ret[1].(error)
-	return ret0, ret1
+	ret0, _ := ret[0].(error)
+	return ret0
 }
 
 // PostUserRequest indicates an expected call of PostUserRequest.
