@@ -1,3 +1,4 @@
+// Package client -пакет в котором создаем конфиг для клиента
 package client
 
 import (
@@ -7,6 +8,7 @@ import (
 	"github.com/joho/godotenv"
 )
 
+// ClientConfig - структура, в которую передаем параметры для запуска клиента
 type ClientConfig struct {
 	Url           string
 	PublicKeyPath string
@@ -33,8 +35,13 @@ func withHashKey(key string) Option {
 	}
 }
 
+// newClientConfig - создает структуру ClientConfig
 func newClientConfig(option ...Option) *ClientConfig {
-	cfg := &ClientConfig{Url: "localhost:8080"}
+	cfg := &ClientConfig{
+		Url:           "localhost:8000",
+		PublicKeyPath: "public.rsa",
+		HashKey:       "cm2984yf2v08ji23r0vhwssdkmvs",
+	}
 
 	for _, opt := range option {
 		opt(cfg)
@@ -43,6 +50,7 @@ func newClientConfig(option ...Option) *ClientConfig {
 	return cfg
 }
 
+// NewClient - загружаем данные из переменных окружения или проставляем дефолтные и возвращаем готовый конфиг
 func NewClient() *ClientConfig {
 	var (
 		url       string
@@ -52,7 +60,7 @@ func NewClient() *ClientConfig {
 
 	err := godotenv.Load()
 	if err != nil {
-		log.Println("Error loading .env file")
+		log.Printf("NewClient: Error loading .env file: %s\n", err.Error())
 	}
 
 	if envPublicKeyPath, ok := os.LookupEnv("PUBLIC_KEY"); ok {

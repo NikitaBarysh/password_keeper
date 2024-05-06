@@ -1,3 +1,4 @@
+// Package service - пакет в котором реализовано безнес-логика сервера
 package service
 
 import (
@@ -18,16 +19,19 @@ const (
 	tokenExp = time.Hour * 9999
 )
 
-type Claims struct {
+// claims - стуктура в котором хранится jwt токен и id пользователя
+type claims struct {
 	jwt.RegisteredClaims
 	UserID int
 }
 
+// AuthService - структура в которой есть зависимость от repository и лежит конфиг
 type AuthService struct {
 	rep *repository.Repository
 	cfg *server.ServConfig
 }
 
+// NewAuthService - создаем структуру AuthService
 func NewAuthService(newRep *repository.Repository, cfg *server.ServConfig) *AuthService {
 	return &AuthService{
 		rep: newRep,
@@ -35,16 +39,17 @@ func NewAuthService(newRep *repository.Repository, cfg *server.ServConfig) *Auth
 	}
 }
 
+// CreateUser - метод, который создает нового пользователя
 func (s *AuthService) CreateUser(ctx context.Context, user entity.User) (int, error) {
-	fmt.Println(user)
 	user.Password = s.generatePasswordHash(user.Password)
 	id, err := s.rep.AuthorizationRepository.SetUserDB(ctx, user)
 	if err != nil {
-		return 0, fmt.Errorf("err to get id from DB: %w", err)
+		return 0, fmt.Errorf("CreateUser: %w", err)
 	}
 	return id, nil
 }
 
+// ValidateLogin - метод, который проверяет наличие логина в репозитории
 func (s *AuthService) ValidateLogin(ctx context.Context, user entity.User) error {
 	err := s.rep.AuthorizationRepository.Validate(ctx, user.Login)
 
@@ -55,18 +60,20 @@ func (s *AuthService) ValidateLogin(ctx context.Context, user entity.User) error
 	return nil
 }
 
+// CheckData - метод, который проверяет пользователя с такими данными
 func (s *AuthService) CheckData(ctx context.Context, user entity.User) (int, error) {
 	user.Password = s.generatePasswordHash(user.Password)
 	id, err := s.rep.AuthorizationRepository.GetUserFromDB(ctx, user)
 	if err != nil {
-		return 0, fmt.Errorf("err to get user fro DB: %w", err)
+		return 0, fmt.Errorf("CheckData: %w", err)
 	}
 
 	return id, nil
 }
 
+// GenerateJWTToken - создаем токен на основе id пользователя
 func (s *AuthService) GenerateJWTToken(userID int) (string, error) {
-	token := jwt.NewWithClaims(jwt.SigningMethodHS256, Claims{
+	token := jwt.NewWithClaims(jwt.SigningMethodHS256, claims{
 		RegisteredClaims: jwt.RegisteredClaims{
 			ExpiresAt: jwt.NewNumericDate(time.Now().Add(tokenExp)),
 		},
@@ -75,18 +82,19 @@ func (s *AuthService) GenerateJWTToken(userID int) (string, error) {
 
 	tokenString, err := token.SignedString([]byte(s.cfg.SecretKey))
 	if err != nil {
-		return "", fmt.Errorf("err to generate token: %w", err)
+		return "", fmt.Errorf("GenerateJWTToken: err to generate token: %w", err)
 	}
 
 	return tokenString, nil
 }
 
+// GetUserIDFromToken - получаем id пользователя по введенному токену
 func (s *AuthService) GetUserIDFromToken(tokenString string) int {
-	claims := &Claims{}
+	claims := &claims{}
 
 	token, err := jwt.ParseWithClaims(tokenString, claims, func(t *jwt.Token) (interface{}, error) {
 		if _, ok := t.Method.(*jwt.SigningMethodHMAC); !ok {
-			return nil, fmt.Errorf("unexpected signing method: %v", t.Header["alg"])
+			return nil, fmt.Errorf("GetUserIDFromToken: unexpected signing method: %v", t.Header["alg"])
 		}
 		return []byte(s.cfg.SecretKey), nil
 	})
@@ -102,6 +110,7 @@ func (s *AuthService) GetUserIDFromToken(tokenString string) int {
 	return claims.UserID
 }
 
+// generatePasswordHash - шифрует пароль
 func (s *AuthService) generatePasswordHash(pass string) string {
 	h := sha256.New()
 	h.Write([]byte(pass))

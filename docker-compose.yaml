@@ -8,14 +8,21 @@ services:
     environment:
       POSTGRES_PASSWORD: qwerty
       POSTGRES_USER: postgres
-    volumes:
-      - /var/lib/postgresql/data
     ports:
       - "5436:5432"
 
-
-  adminer:
-    image: adminer
-    restart: always
-    ports:
-      - 8000:8080
+#  app:
+#    build: ./
+#    command:
+#      - ./serv
+#    ports:
+#      - "8080:8000"
+#    depends_on:
+#      - db
+#    environment:
+#      PUBLIC_KEY: "public.rsa"
+#      PRIVATE_KEY: "private.rsa"
+#      SALT: "cokdnvosavnsdfm3jr2034v=0wjv=4092h3jv"
+#      SECERET_KEY: "fad2osfj239vpsdlvmpKJV"
+#      HASH_KEY: "cm2984yf2v08ji23r0vhwssdkmvs"
+#      DATABASE: "postgres://postgres:qwerty@localhost:5436/postgres?sslmode=disable"

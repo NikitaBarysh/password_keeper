@@ -27,12 +27,12 @@ func main() {
 
 	db, err := repository.InitDataBase(ctx, cfg.DataBaseDSN)
 	if err != nil {
-		logging.Fatal("get err from DB")
+		logging.Fatal("Main server: ", err)
 	}
 
 	err = encryption.InitDecryptor(cfg.PrivateCryptoKeyPath)
 	if err != nil {
-		logging.Fatal("get err from encryption")
+		logging.Fatal("Main server: ", err)
 	}
 
 	router := chi.NewRouter()
@@ -46,7 +46,7 @@ func main() {
 	srv := new(app.Server)
 	go func() {
 		if err = srv.Run(cfg.Endpoint, router); err != nil {
-			logging.Fatal("Err to start server: ", err)
+			logging.Fatal("Main server:Err to start server: ", err)
 		}
 	}()
 	logging.Info("Server start")

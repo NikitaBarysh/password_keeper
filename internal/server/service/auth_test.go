@@ -140,9 +140,8 @@ func TestServiceCheckData(t *testing.T) {
 			name:          "success",
 			mockBehaviour: func(s *MockAuthorizationService) {},
 			user: entity.User{
-
-				Login:    "admin",
-				Password: "admin",
+				Login:    "nikita24",
+				Password: "nikita24",
 			},
 			wantErr: nil,
 		},

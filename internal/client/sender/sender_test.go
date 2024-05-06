@@ -2,7 +2,9 @@ package sender
 
 import (
 	"errors"
+	"math/rand"
 	"net/http"
+	"strconv"
 	"testing"
 
 	"github.com/golang/mock/gomock"
@@ -12,7 +14,7 @@ import (
 )
 
 func TestSenderPostData(t *testing.T) {
-	const tok = "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjE3NTA4MDU0MzEsIlVzZXJJRCI6MTV9.MJhrMEyqIMfD9mfMEHl75iNvT34tBKwntYPo7dFEZvA"
+	const tok = "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjE3NTA5ODI4MzUsIlVzZXJJRCI6MX0.MNJez9Bw0MKpzZFoWWjawpmtbmg9AZ-5qQMOQ7PIYpk"
 	type mockBehaviour func(s *MockSendInterface)
 	tests := []struct {
 		name      string
@@ -92,7 +94,7 @@ func TestSenderPostData(t *testing.T) {
 }
 
 func TestSenderPostUser(t *testing.T) {
-	const tok = "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjE3NTA4MDU0MzEsIlVzZXJJRCI6MTV9.MJhrMEyqIMfD9mfMEHl75iNvT34tBKwntYPo7dFEZvA"
+	const tok = "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjE3NTA5ODI4MzUsIlVzZXJJRCI6MX0.MNJez9Bw0MKpzZFoWWjawpmtbmg9AZ-5qQMOQ7PIYpk"
 	type mockBehaviour func(s *MockSendInterface)
 	tests := []struct {
 		name    string
@@ -110,7 +112,7 @@ func TestSenderPostUser(t *testing.T) {
 			wantErr: nil,
 			address: "localhost:8080",
 			user: entity.User{ // Если проверять, то нужно рандомные значение, т.к. эти будут уже в базе
-				Login:    "testdacacfaxssdaascaaafsaafsssfs",
+				Login:    strconv.Itoa(rand.Int()),
 				Password: "testvsvsvdcsacasaaacsazxxaasvsv",
 			},
 			action: "register",
@@ -177,7 +179,7 @@ func TestSenderPostUser(t *testing.T) {
 }
 
 func TestSenderGetData(t *testing.T) {
-	const tok = "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjE3NTA4MDU0MzEsIlVzZXJJRCI6MTV9.MJhrMEyqIMfD9mfMEHl75iNvT34tBKwntYPo7dFEZvA"
+	const tok = "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjE3NTA5ODI4MzUsIlVzZXJJRCI6MX0.MNJez9Bw0MKpzZFoWWjawpmtbmg9AZ-5qQMOQ7PIYpk"
 	type mockBehaviour func(s *MockSendInterface)
 	tests := []struct {
 		name      string
@@ -192,7 +194,7 @@ func TestSenderGetData(t *testing.T) {
 			name:      "Ok",
 			token:     tok,
 			mock:      func(s *MockSendInterface) {},
-			testEvent: "test",
+			testEvent: "testPostData",
 			wantErr:   nil,
 			hashKey:   "some",
 			address:   "localhost:8080",
@@ -242,7 +244,7 @@ func TestSenderGetData(t *testing.T) {
 }
 
 func TestSenderDeleteData(t *testing.T) {
-	const tok = "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjE3NTA4MDU0MzEsIlVzZXJJRCI6MTV9.MJhrMEyqIMfD9mfMEHl75iNvT34tBKwntYPo7dFEZvA"
+	const tok = "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjE3NTA5ODI4MzUsIlVzZXJJRCI6MX0.MNJez9Bw0MKpzZFoWWjawpmtbmg9AZ-5qQMOQ7PIYpk"
 	type mockBehaviour func(s *MockSendInterface)
 	tests := []struct {
 		name      string

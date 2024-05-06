@@ -1,4 +1,4 @@
-.env
+#.env
 
 .DS_store
 
@@ -14,5 +14,3 @@ project_log.log
 .idea
 .vscode
 
-
-.DS_Store

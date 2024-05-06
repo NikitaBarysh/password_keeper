@@ -1,3 +1,4 @@
+// Package sender - пакет для взаимодействия с сервером
 package sender
 
 import (
@@ -23,8 +24,10 @@ import (
 
 var in = bufio.NewReader(os.Stdin)
 
+// timeOut - через какое время выдаст timeOut запросу от клиента
 const timeOut = 300 * time.Second
 
+// Sender - структура в которой хранятся свойства для взаимодействия с сервером
 type Sender struct {
 	client     *http.Client
 	hashKey    string
@@ -37,6 +40,7 @@ type Sender struct {
 	//sendInterface SendInterface
 }
 
+// NewSender - создаем Sender
 func NewSender(cfg *client.ClientConfig) (*Sender, error) {
 	newClient := &http.Client{
 		Timeout: timeOut,
@@ -48,7 +52,7 @@ func NewSender(cfg *client.ClientConfig) (*Sender, error) {
 
 	enc, err := encryption.InitEncryptor(cfg.PublicKeyPath)
 	if err != nil {
-		return nil, err
+		return nil, fmt.Errorf("NewSender: %w", err)
 	}
 	return &Sender{
 		client:     newClient,
@@ -61,6 +65,7 @@ func NewSender(cfg *client.ClientConfig) (*Sender, error) {
 	}, nil
 }
 
+// PostUserRequest - в зависимости от типа действия, регистрируемся и авторизуемся
 func (s *Sender) PostUserRequest(login, password, path string) error {
 	body := entity.User{
 		Login:    login,
@@ -69,123 +74,127 @@ func (s *Sender) PostUserRequest(login, password, path string) error {
 
 	b, err := s.encryptUser(body)
 	if err != nil {
-		return err
+		return fmt.Errorf("PostUserRequest: %w", err)
 	}
 
 	url := fmt.Sprintf("http://%s/%s", s.address, path)
 
 	req, err := http.NewRequest(http.MethodPost, url, bytes.NewBuffer(b))
 	if err != nil {
-		return err
+		return fmt.Errorf("PostUserRequest: %w", err)
 	}
 
 	resp, err := s.client.Do(req)
 	if err != nil {
-		return err
+		return fmt.Errorf("PostUserRequest: %w", err)
 	}
 
 	if resp.StatusCode/100 != 2 {
-		return errors.New("Failed to register user ")
+		return errors.New("PostUserRequest: Failed to register user: status not 200 ")
 	}
 
 	err = s.parseAuthToken(resp)
 	if err != nil {
-		return err
+		return fmt.Errorf("PostUserRequest: %w", err)
 	}
 
 	return nil
 }
 
+// PostDataRequest - отправляем данные на сервер
 func (s *Sender) PostDataRequest(data, eventType string) error {
 	err := s.checker()
 	if err != nil {
-		return err
+		return fmt.Errorf("PostDataRequest: %w", err)
 	}
 
 	b, err := encryption.SymmetricEncrypt([]byte(data), s.hashKey)
 	if err != nil {
-		return err
+		return fmt.Errorf("PostDataRequest: %w", err)
 	}
 
 	URL := fmt.Sprintf("http://%s/api/set/%s", s.address, eventType)
 
 	req, err := http.NewRequest(http.MethodPost, URL, bytes.NewBuffer(b))
 	if err != nil {
-		return err
+		return fmt.Errorf("PostDataRequest: %w", err)
 	}
 
 	req.Header.Set("Authorization", s.token)
 
 	resp, err := s.client.Do(req)
 	if err != nil {
-		return err
+		return fmt.Errorf("PostDataRequest: %w", err)
 	}
 
 	if resp.StatusCode/100 != 2 {
-		return errors.New("Status code not 200 ")
+		return errors.New("PostDataRequest: status code not 200 ")
 	}
 
 	return nil
 }
 
+// GetDataRequest - получаем данные с сервера
 func (s *Sender) GetDataRequest(eventType string) ([]byte, error) {
 	url := fmt.Sprintf("http://%s/api/get/%s", s.address, eventType)
 
 	req, err := http.NewRequest(http.MethodGet, url, nil)
 	if err != nil {
-		return nil, err
+		return nil, fmt.Errorf("GetDataRequest: %w", err)
 	}
 
 	req.Header.Set("Authorization", s.token)
 
 	resp, err := s.client.Do(req)
 	if err != nil {
-		return nil, err
+		return nil, fmt.Errorf("GetDataRequest: %w", err)
 	}
 
 	if resp.StatusCode/100 != 2 {
-		return nil, errors.New("Status code not 200 ")
+		return nil, errors.New("GetDataRequest: status code not 200 ")
 	}
 
 	b, err := io.ReadAll(resp.Body)
 	if err != nil {
-		return nil, fmt.Errorf("Failed to read response body %w ", err)
+		return nil, fmt.Errorf("GetDataRequest: Failed to read response body %w ", err)
 	}
 
 	data, err := encryption.SymmetricDecrypt(b, s.hashKey)
 	if err != nil {
-		return nil, fmt.Errorf("Error decrypting data %w ", err)
+		return nil, fmt.Errorf("GetDataRequest: %w ", err)
 	}
 
 	return data, nil
 }
 
+// DeleteDataRequest - удаляем данные с сервера
 func (s *Sender) DeleteDataRequest(eventType string) error {
 	url := fmt.Sprintf("http://%s/api/delete/%s", s.address, eventType)
 
 	req, err := http.NewRequest(http.MethodDelete, url, nil)
 	if err != nil {
-		return err
+		return fmt.Errorf("DeleteDataRequest: %w", err)
 	}
 
 	req.Header.Set("Authorization", s.token)
 
 	resp, err := s.client.Do(req)
 	if err != nil {
-		return err
+		return fmt.Errorf("DeleteDataRequest: %w", err)
 	}
 
 	if resp.StatusCode/100 != 2 {
-		return errors.New("Status code not 200 ")
+		return errors.New("DeleteDataRequest: status code not 200 ")
 	}
 
 	return nil
 }
 
+// ConnectWs - websocket соединение с сервером
 func (s *Sender) ConnectWs() error {
 	err := s.checker()
 	if err != nil {
-		return err
+		return fmt.Errorf("ConnectWs: %w", err)
 	}
 
 	header := http.Header{}
@@ -195,7 +204,7 @@ func (s *Sender) ConnectWs() error {
 
 	c, _, err := websocket.DefaultDialer.Dial(URL.String(), header)
 	if err != nil {
-		return err
+		return fmt.Errorf("ConnectWs: %w", err)
 	}
 	defer c.Close()
 
@@ -240,13 +249,14 @@ func (s *Sender) ConnectWs() error {
 		case <-interrupt:
 			err = c.WriteMessage(websocket.CloseMessage, websocket.FormatCloseMessage(websocket.CloseNormalClosure, ""))
 			if err != nil {
-				return err
+				return fmt.Errorf("ConnectWs: %w", err)
 			}
 			return nil
 		}
 	}
 }
 
+// getInput - получаем действия от пользователя, которе нудно сделать
 func (s *Sender) getInput() {
 	action := input("action")
 
@@ -279,59 +289,64 @@ func (s *Sender) getInput() {
 	}
 }
 
+// pack - упаковываем и шифруем данные для отправки на сервер
 func (s *Sender) pack(data entity.WebDataMSG) ([]byte, error) {
 	encData, err := encryption.SymmetricEncrypt(data.Payload, s.hashKey)
 	if err != nil {
-		return nil, fmt.Errorf("Error encrypting data ")
+		return nil, fmt.Errorf("pack: %w", err)
 	}
 
 	data.Payload = encData
 
 	b, err := json.Marshal(data)
 	if err != nil {
-		return nil, fmt.Errorf("Error marshaling data ")
+		return nil, fmt.Errorf("pack: %w", err)
 	}
 
 	return b, nil
 }
 
+// encryptUser - шифруем логин и пароль
 func (s *Sender) encryptUser(user entity.User) ([]byte, error) {
 	b, err := json.Marshal(user)
 	if err != nil {
-		return nil, fmt.Errorf("Failed to marshal user to JSON ")
+		return nil, fmt.Errorf("encryptUser: %w", err)
 	}
 
 	data, err := s.encrypt.Encrypt(b)
 	if err != nil {
-		return nil, fmt.Errorf("Failed to encrypt user ")
+		return nil, fmt.Errorf("encryptUser: %w", err)
 	}
 
 	return data, nil
 }
 
+// parseAuthToken - парсим jwt токен, полученный от сервера
 func (s *Sender) parseAuthToken(resp *http.Response) error {
 	h := resp.Header.Get("Authorization")
 	if h == "" {
-		return errors.New("Authorization header is empty ")
+		return errors.New("parseAuthToken: Authorization header is empty ")
 	}
 	s.token = h
 
 	return nil
 }
 
+// checker - проверяем на наличие токена у пользщователя
 func (s *Sender) checker() error {
 	if s.token == "" {
-		return errors.New("Token is empty, try to login ")
+		return errors.New("checker: Token is empty, try to login ")
 	}
 
 	return nil
 }
 
+// input - считывает команды с консоли
 func input(cmd string) string {
 	fmt.Printf("Write a %s: ", cmd)
 	data, err := in.ReadString('\n')
 	if err != nil {
-		log.Println(err)
+		log.Printf("input %v\n", err)
 	}
 	data = strings.Replace(data, "\n", "", -1)
 	return data

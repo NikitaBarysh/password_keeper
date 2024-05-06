@@ -1,3 +1,4 @@
+// Package server - это пакет c конфигом для сервера
 package server
 
 import (
@@ -8,6 +9,7 @@ import (
 	"github.com/joho/godotenv"
 )
 
+// ServConfig - структура, в которую передаем параметры для запуска сервера
 type ServConfig struct {
 	Endpoint             string
 	DataBaseDSN          string
@@ -48,12 +50,13 @@ func withSecretKey(secretKey string) Option {
 	}
 }
 
+// NewServConfig - создает структуру ServConfig, (еще используеться для тестов)
 func NewServConfig(option ...Option) *ServConfig {
 	cfg := &ServConfig{
 		Endpoint:    "8080",
 		DataBaseDSN: "postgres://postgres:qwerty@localhost:5436/postgres?sslmode=disable",
 		Salt:        "cokdnvosavnsdfm3jr2034v=0wjv=4092h3jv",
-		SecretKey:   "ewfwvfsvwgf42",
+		SecretKey:   "fad2osfj239vpsdlvmpKJV",
 	}
 
 	for _, opt := range option {
@@ -63,6 +66,7 @@ func NewServConfig(option ...Option) *ServConfig {
 	return cfg
 }
 
+// NewServer - загружаем данные из переменных окружения или проставляем дефолтные
 func NewServer() *ServConfig {
 	var (
 		endpoint       string
@@ -72,13 +76,16 @@ func NewServer() *ServConfig {
 		secretKey      string
 	)
 
-	err := godotenv.Load()
+	err := godotenv.Load(".env")
 	if err != nil {
-		log.Println("Error loading .env file")
+		log.Printf("NewServer: Error loading .env file: %s\n", err.Error())
 	}
 
-	flag.StringVar(&endpoint, "a", "8080", "endpoint for server")
+	flag.StringVar(&endpoint, "a", "8000", "endpoint for server")
 	flag.StringVar(&database, "d", "postgres://postgres:qwerty@localhost:5436/postgres?sslmode=disable", "url to connect to DB")
+	flag.StringVar(&privateKeyPath, "p", "private.rsa", "path to private key")
+	flag.StringVar(&salt, "s", "cokdnvosavnsdfm3jr2034v=0wjv=4092h3jv", "salt to sign")
+	flag.StringVar(&secretKey, "k", "fad2osfj239vpsdlvmpKJV", "secret key")
 
 	flag.Parse()
 

@@ -98,8 +98,7 @@ func read(action string) string {
 	act, err := reader.ReadString('\n')
 	act = strings.Replace(act, "\n", "", -1)
 	if err != nil {
-		fmt.Println(fmt.Errorf("Error reading input: %s \n", err))
+		fmt.Println(fmt.Errorf("read: Error reading input: %s \n", err))
 	}
-
 	return act
 }
