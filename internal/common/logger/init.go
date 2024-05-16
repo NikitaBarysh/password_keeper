@@ -29,8 +29,8 @@ func InitLogger() *Logger {
 }
 
 // Info - метод, который выводит ошибки уровня Info
-func (l *Logger) Info(msg string) {
-	l.Log.Sugar().Infof(fmt.Sprintf(msg))
+func (l *Logger) Info(msg string, opt ...any) {
+	l.Log.Sugar().Infof(fmt.Sprintf(msg, opt...))
 }
 
 // Error - метод, который выводит ошибки уровня Error
