@@ -15,3 +15,5 @@ project_log.log
 .vscode
 
 .database
+/project_logs.log
+/tests/project_logs.log
