@@ -11,29 +11,28 @@ on:
 jobs:
   test:
     runs-on: ubuntu-latest
-    container: golang:1.21
+    container: golang:1.20
 
     services:
       postgres:
         image: postgres
         env:
-          POSTGRES_PASSWORD: qwerty,
+          POSTGRES_PASSWORD: qwerty
           POSTGRES_DB: postgres
           POSTGRES_USER: postgres
         ports:
-          - 5444:5432
+          - "5432:5432"
 
     steps:
       - name: Checkout
         uses: actions/checkout@v4.1.4
 
       - name: Setup Go environment
-        uses: actions/setup-go@v5.0.1
-
+        uses: actions/setup-go@v2
 
       - name: Setup go deps
         run: |
           go install golang.org/x/tools/cmd/goimports@latest
 
       - name: Test
-        uses: go test github.com/NikitaBarysh/password_keeper/internal/server/handler github.com/NikitaBarysh/password_keeper/internal/server/service
+        run: go test ./...

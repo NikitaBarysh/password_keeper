@@ -2,6 +2,7 @@ package main
 
 import (
 	"context"
+	"fmt"
 	"os"
 	"os/signal"
 	"syscall"
@@ -32,7 +33,7 @@ func main() {
 	logging := logger.InitLogger()
 
 	cfg := server.NewServer()
-	logging.Info("Project cfg: endpoint: %s", cfg.Endpoint)
+	logging.Info(fmt.Sprintf("Project cfg: endpoint: %s", cfg.Endpoint))
 
 	ctx, cancel := context.WithCancel(context.Background())
 	defer cancel()
@@ -45,12 +46,12 @@ func main() {
 		cfg.DBPassword,
 	)
 	if err != nil {
-		logging.Fatal("Main client: ", err)
+		logging.Fatal("Main client: %s", err.Error())
 	}
 
 	err = encryption.InitDecryptor(cfg.PrivateCryptoKeyPath)
 	if err != nil {
-		logging.Fatal("Main client: ", err)
+		logging.Fatal("Main client: %s", err.Error())
 	}
 
 	router := chi.NewRouter()
@@ -64,7 +65,7 @@ func main() {
 	srv := new(app.Server)
 	go func() {
 		if err = srv.Run(cfg.Endpoint, router); err != nil {
-			logging.Fatal("Main client:Err to start client: ", err)
+			logging.Fatal("Main client:Err to start client: %s", err.Error())
 		}
 	}()
 	logging.Info("Server start")
@@ -74,6 +75,6 @@ func main() {
 	<-termSig
 
 	if err = srv.ShutDown(ctx); err != nil {
-		logging.Fatal("err to shutdown", err)
+		logging.Fatal("err to shutdown %s", err.Error())
 	}
 }

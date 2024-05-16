@@ -3,9 +3,9 @@ package logger
 import (
 	"bufio"
 	"errors"
+	"fmt"
 	"net"
 	"net/http"
-	"time"
 
 	"go.uber.org/zap"
 )
@@ -56,8 +56,6 @@ func (l *loggingResponseWriter) Flush() {
 
 func LoggingMiddleware(handler http.Handler) http.Handler {
 	return http.HandlerFunc(func(rw http.ResponseWriter, r *http.Request) {
-		start := time.Now()
-
 		response := &responseData{
 			size:   0,
 			status: 0,
@@ -69,14 +67,10 @@ func LoggingMiddleware(handler http.Handler) http.Handler {
 		}
 
 		handler.ServeHTTP(&lw, r)
-		duration := time.Since(start)
 
-		InitLogger().Info("",
+		InitLogger().Info(fmt.Sprintf("Request received: %v %v %v",
 			zap.String("uri", r.RequestURI),
-			zap.String("method", r.Method),
 			zap.Int("status", response.status),
-			zap.Duration("duration", duration),
-			zap.Int("size", response.size),
-			zap.String("header", response.head))
+			zap.String("header", response.head)))
 	})
 }

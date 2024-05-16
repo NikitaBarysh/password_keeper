@@ -29,16 +29,16 @@ func InitLogger() *Logger {
 }
 
 // Info - метод, который выводит ошибки уровня Info
-func (l *Logger) Info(msg string, opt ...any) {
-	l.Log.Sugar().Infow(fmt.Sprintf(msg, opt...))
+func (l *Logger) Info(msg string) {
+	l.Log.Sugar().Infof(fmt.Sprintf(msg))
 }
 
 // Error - метод, который выводит ошибки уровня Error
 func (l *Logger) Error(msg string, opt ...any) {
-	l.Log.Sugar().Errorw(fmt.Sprintf(msg, opt...))
+	l.Log.Sugar().Errorf(fmt.Sprintf(msg, opt...))
 }
 
 // Fatal - метод, который выводит ошибки уровня Fatal
 func (l *Logger) Fatal(msg string, opt ...any) {
-	l.Log.Sugar().Fatalw(fmt.Sprintf(msg, opt...))
+	l.Log.Sugar().Fatal(fmt.Sprintf(msg, opt...))
 }

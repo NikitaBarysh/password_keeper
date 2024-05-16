@@ -27,7 +27,7 @@ const (
 
 func main() {
 	logging := logger.InitLogger()
-	log.Println("Version: %s, Time: %s", Version, BuildTime)
+	log.Printf("Version: %s, Time: %s", Version, BuildTime)
 
 	cfg := client.NewClient()
 
