@@ -36,7 +36,11 @@ jobs:
           go install golang.org/x/tools/cmd/goimports@latest
 
       - name: Install Migrate
-        run: go get -v -tags 'postgres' -u github.com/golang-migrate/migrate/tree/master/cmd/migrate
+        run: |
+          curl -LJO https://github.com/golang-migrate/migrate/releases/download/v4.14.1/migrate.linux-amd64.tar.gz
+          tar -xvf migrate.linux-amd64.tar.gz
+          mv migrate.linux-amd64 /usr/local/bin/migrate
+          chmod +x /usr/local/bin/migrate
 
       - name: Test
         run: |
