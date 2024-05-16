@@ -247,7 +247,6 @@ func TestGenerateJWT(t *testing.T) {
 			if _, err := service.GenerateJWTToken(test.userID); (err != nil) != (test.wantErr != nil) {
 				t.Errorf("GenerateJWT error = %v, wantErr %v", err, test.wantErr != nil)
 			}
-
 		})
 	}
 }

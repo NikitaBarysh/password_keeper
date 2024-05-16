@@ -37,5 +37,6 @@ jobs:
 
       - name: Test
         run: |
-          sleep 10
+          migrate -path ./schema -database 'postgres://postgres:qwerty@postgres:5432/postgres?sslmode=disable' up
+          sleep 3
           go test ./...
