@@ -36,7 +36,7 @@ jobs:
           go install golang.org/x/tools/cmd/goimports@latest
 
       - name: Install Migrate
-        run: go get -v -tags 'postgres' -u github.com/golang-migrate/migrate/cmd/migrate
+        run: go get -v -tags 'postgres' -u github.com/golang-migrate/migrate
 
       - name: Test
         run: |
