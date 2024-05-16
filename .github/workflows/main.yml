@@ -35,6 +35,9 @@ jobs:
         run: |
           go install golang.org/x/tools/cmd/goimports@latest
 
+      - name: Install Migrate
+        run: go get -v -tags 'postgres' -u github.com/golang-migrate/migrate/cmd/migrate
+
       - name: Test
         run: |
           migrate -path ./schema -database 'postgres://postgres:qwerty@postgres:5432/postgres?sslmode=disable' up
