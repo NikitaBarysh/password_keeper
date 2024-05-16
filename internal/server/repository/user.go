@@ -58,7 +58,7 @@ func (r *AuthRepository) SetUserDB(ctx context.Context, user entity.User) (int, 
 	return id, tx.Commit()
 }
 
-// GetUserFromDB - получаем пользователя из базы
+// GetUserFromDB - получаем id пользователя из базы
 func (r *AuthRepository) GetUserFromDB(ctx context.Context, user entity.User) (int, error) {
 	var id int
 

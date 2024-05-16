@@ -80,6 +80,20 @@ func (mr *MockAuthorizationServiceMockRecorder) GenerateJWTToken(userID interfac
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GenerateJWTToken", reflect.TypeOf((*MockAuthorizationService)(nil).GenerateJWTToken), userID)
 }
 
+// GeneratePasswordHash mocks base method.
+func (m *MockAuthorizationService) GeneratePasswordHash(pass string) string {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "GeneratePasswordHash", pass)
+	ret0, _ := ret[0].(string)
+	return ret0
+}
+
+// GeneratePasswordHash indicates an expected call of GeneratePasswordHash.
+func (mr *MockAuthorizationServiceMockRecorder) GeneratePasswordHash(pass interface{}) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GeneratePasswordHash", reflect.TypeOf((*MockAuthorizationService)(nil).GeneratePasswordHash), pass)
+}
+
 // GetUserIDFromToken mocks base method.
 func (m *MockAuthorizationService) GetUserIDFromToken(tokenString string) int {
 	m.ctrl.T.Helper()

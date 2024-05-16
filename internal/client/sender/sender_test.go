@@ -13,8 +13,11 @@ import (
 	"password_keeper/internal/common/entity"
 )
 
+// Для теста для начала нужно запустить сервер, получить токен авторизованного пользователя и поменять токен на полученный
+const tok = "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjE3NTE3Njc2NTMsIlVzZXJJRCI6M30.L_nb24gCL163FFNJsfgvIsqY3u_dho2f6VdJLySEVe8"
+
 func TestSenderPostData(t *testing.T) {
-	const tok = "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjE3NTA5ODI4MzUsIlVzZXJJRCI6MX0.MNJez9Bw0MKpzZFoWWjawpmtbmg9AZ-5qQMOQ7PIYpk"
+	//const tok = "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjE3NTE3Njc2NTMsIlVzZXJJRCI6M30.L_nb24gCL163FFNJsfgvIsqY3u_dho2f6VdJLySEVe8"
 	type mockBehaviour func(s *MockSendInterface)
 	tests := []struct {
 		name      string
@@ -34,7 +37,7 @@ func TestSenderPostData(t *testing.T) {
 			testEvent: "testPostData",
 			wantErr:   nil,
 			hashKey:   "some",
-			address:   "localhost:8080",
+			address:   "localhost:8000",
 		},
 		{
 			name:      "Empty token",
@@ -44,7 +47,7 @@ func TestSenderPostData(t *testing.T) {
 			testEvent: "test",
 			wantErr:   errors.New("Token is empty, try to login "),
 			hashKey:   "some",
-			address:   "localhost:8080",
+			address:   "localhost:8000",
 		},
 		{
 			name:     "No event",
@@ -53,7 +56,7 @@ func TestSenderPostData(t *testing.T) {
 			testData: "hi",
 			wantErr:  errors.New("Add event "),
 			hashKey:  "some",
-			address:  "localhost:8080",
+			address:  "localhost:8000",
 		},
 		{
 			name:      "No hash func",
@@ -62,7 +65,7 @@ func TestSenderPostData(t *testing.T) {
 			testData:  "hi",
 			testEvent: "test",
 			wantErr:   errors.New("Empty hash key "),
-			address:   "localhost:8080",
+			address:   "localhost:8000",
 		},
 		{
 			name:      "Err to do request",
@@ -87,14 +90,14 @@ func TestSenderPostData(t *testing.T) {
 				address: test.address}
 
 			if err := sss.PostDataRequest(test.testData, test.testEvent); (err != nil) != (test.wantErr != nil) {
-				t.Errorf("PostDataRequest() error = %v, wantErr %v", err, (test.wantErr != nil))
+				t.Errorf("PostDataRequest() error = %v, wantErr %v", err, test.wantErr != nil)
 			}
 		})
 	}
 }
 
 func TestSenderPostUser(t *testing.T) {
-	const tok = "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjE3NTA5ODI4MzUsIlVzZXJJRCI6MX0.MNJez9Bw0MKpzZFoWWjawpmtbmg9AZ-5qQMOQ7PIYpk"
+	//const tok = "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjE3NTA5ODI4MzUsIlVzZXJJRCI6MX0.MNJez9Bw0MKpzZFoWWjawpmtbmg9AZ-5qQMOQ7PIYpk"
 	type mockBehaviour func(s *MockSendInterface)
 	tests := []struct {
 		name    string
@@ -110,7 +113,7 @@ func TestSenderPostUser(t *testing.T) {
 			name:    "Ok",
 			mock:    func(s *MockSendInterface) {},
 			wantErr: nil,
-			address: "localhost:8080",
+			address: "localhost:8000",
 			user: entity.User{ // Если проверять, то нужно рандомные значение, т.к. эти будут уже в базе
 				Login:    strconv.Itoa(rand.Int()),
 				Password: "testvsvsvdcsacasaaacsazxxaasvsv",
@@ -134,7 +137,7 @@ func TestSenderPostUser(t *testing.T) {
 			name:    "status not 200",
 			mock:    func(s *MockSendInterface) {},
 			wantErr: errors.New("status not 200"),
-			address: "localhost:8080",
+			address: "localhost:8000",
 			user: entity.User{
 				Login:    "test",
 				Password: "test",
@@ -172,14 +175,14 @@ func TestSenderPostUser(t *testing.T) {
 			test.mock(s)
 
 			if err := sender.PostUserRequest(test.user.Login, test.user.Password, test.action); (err != nil) != (test.wantErr != nil) {
-				t.Errorf("PostUserRequest() error = %v, wantErr %v", err, (test.wantErr != nil))
+				t.Errorf("PostUserRequest() error = %v, wantErr %v", err, test.wantErr != nil)
 			}
 		})
 	}
 }
 
 func TestSenderGetData(t *testing.T) {
-	const tok = "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjE3NTA5ODI4MzUsIlVzZXJJRCI6MX0.MNJez9Bw0MKpzZFoWWjawpmtbmg9AZ-5qQMOQ7PIYpk"
+	//const tok = "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjE3NTE3Njc2NTMsIlVzZXJJRCI6M30.L_nb24gCL163FFNJsfgvIsqY3u_dho2f6VdJLySEVe8"
 	type mockBehaviour func(s *MockSendInterface)
 	tests := []struct {
 		name      string
@@ -197,7 +200,7 @@ func TestSenderGetData(t *testing.T) {
 			testEvent: "testPostData",
 			wantErr:   nil,
 			hashKey:   "some",
-			address:   "localhost:8080",
+			address:   "localhost:8000",
 		},
 		{
 			name:      "Empty token",
@@ -205,7 +208,7 @@ func TestSenderGetData(t *testing.T) {
 			testEvent: "test",
 			wantErr:   errors.New("Token is empty, try to login "),
 			hashKey:   "some",
-			address:   "localhost:8080",
+			address:   "localhost:8000",
 		},
 		{
 			name:      "Err to do request",
@@ -221,7 +224,7 @@ func TestSenderGetData(t *testing.T) {
 			mock:      func(s *MockSendInterface) {},
 			testEvent: "test",
 			wantErr:   errors.New("Empty hash key "),
-			address:   "localhost:8080",
+			address:   "localhost:8000",
 		},
 	}
 
@@ -237,14 +240,14 @@ func TestSenderGetData(t *testing.T) {
 				address: test.address}
 
 			if _, err := sss.GetDataRequest(test.testEvent); (err != nil) != (test.wantErr != nil) {
-				t.Errorf("GetDataRequest() error = %v, wantErr %v", err, (test.wantErr != nil))
+				t.Errorf("GetDataRequest() error = %v, wantErr %v", err, test.wantErr != nil)
 			}
 		})
 	}
 }
 
 func TestSenderDeleteData(t *testing.T) {
-	const tok = "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjE3NTA5ODI4MzUsIlVzZXJJRCI6MX0.MNJez9Bw0MKpzZFoWWjawpmtbmg9AZ-5qQMOQ7PIYpk"
+	//const tok = "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjE3NTE3Njc2NTMsIlVzZXJJRCI6M30.L_nb24gCL163FFNJsfgvIsqY3u_dho2f6VdJLySEVe8"
 	type mockBehaviour func(s *MockSendInterface)
 	tests := []struct {
 		name      string
@@ -262,7 +265,7 @@ func TestSenderDeleteData(t *testing.T) {
 			testEvent: "testing",
 			wantErr:   nil,
 			hashKey:   "some",
-			address:   "localhost:8080",
+			address:   "localhost:8000",
 		},
 		{
 			name:      "Empty token",
@@ -270,7 +273,7 @@ func TestSenderDeleteData(t *testing.T) {
 			testEvent: "testing",
 			wantErr:   errors.New("Token is empty, try to login "),
 			hashKey:   "some",
-			address:   "localhost:8080",
+			address:   "localhost:8000",
 		},
 		{
 			name:      "err to do request",
@@ -294,7 +297,7 @@ func TestSenderDeleteData(t *testing.T) {
 				address: test.address}
 
 			if err := sss.DeleteDataRequest(test.testEvent); (err != nil) != (test.wantErr != nil) {
-				t.Errorf("DeleteDataRequest() error = %v, wantErr %v", err, (test.wantErr != nil))
+				t.Errorf("DeleteDataRequest() error = %v, wantErr %v", err, test.wantErr != nil)
 			}
 		})
 	}

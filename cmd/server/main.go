@@ -6,6 +6,8 @@ import (
 	"os/signal"
 	"syscall"
 
+	_ "github.com/lib/pq"
+
 	"github.com/go-chi/chi/v5"
 	"password_keeper/config/server"
 	"password_keeper/internal/common/app"
@@ -16,23 +18,39 @@ import (
 	"password_keeper/internal/server/service"
 )
 
+// @Title Password keeper app API
+// @Version 1.0
+// @Description App, which save secret data
+
+// @Host localhost:8000
+
+// @SecurityDefinitions.apiKey ApiKeyAuth
+// @in header
+// @Name Authorization
+
 func main() {
 	logging := logger.InitLogger()
 
 	cfg := server.NewServer()
-	logging.Info("Project cfg: endpoint: %s, database: %s", cfg.Endpoint, cfg.DataBaseDSN)
+	logging.Info("Project cfg: endpoint: %s", cfg.Endpoint)
 
 	ctx, cancel := context.WithCancel(context.Background())
 	defer cancel()
 
-	db, err := repository.InitDataBase(ctx, cfg.DataBaseDSN)
+	db, err := repository.InitDataBase(ctx,
+		cfg.DBHost,
+		cfg.DBPort,
+		cfg.DBDatabase,
+		cfg.DBUsername,
+		cfg.DBPassword,
+	)
 	if err != nil {
-		logging.Fatal("Main server: ", err)
+		logging.Fatal("Main client: ", err)
 	}
 
 	err = encryption.InitDecryptor(cfg.PrivateCryptoKeyPath)
 	if err != nil {
-		logging.Fatal("Main server: ", err)
+		logging.Fatal("Main client: ", err)
 	}
 
 	router := chi.NewRouter()
@@ -46,7 +64,7 @@ func main() {
 	srv := new(app.Server)
 	go func() {
 		if err = srv.Run(cfg.Endpoint, router); err != nil {
-			logging.Fatal("Main server:Err to start server: ", err)
+			logging.Fatal("Main client:Err to start client: ", err)
 		}
 	}()
 	logging.Info("Server start")

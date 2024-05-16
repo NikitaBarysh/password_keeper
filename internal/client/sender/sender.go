@@ -37,7 +37,6 @@ type Sender struct {
 	deleteData chan []byte
 	token      string
 	address    string
-	//sendInterface SendInterface
 }
 
 // NewSender - создаем Sender
@@ -54,6 +53,8 @@ func NewSender(cfg *client.ClientConfig) (*Sender, error) {
 	if err != nil {
 		return nil, fmt.Errorf("NewSender: %w", err)
 	}
+
+	newURL := fmt.Sprintf("%s:%s", cfg.Url, cfg.Port)
 	return &Sender{
 		client:     newClient,
 		encrypt:    enc,
@@ -61,7 +62,7 @@ func NewSender(cfg *client.ClientConfig) (*Sender, error) {
 		addData:    addData,
 		getData:    getData,
 		deleteData: deleteData,
-		address:    cfg.Url,
+		address:    newURL,
 	}, nil
 }
 

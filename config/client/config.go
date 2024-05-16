@@ -1,44 +1,45 @@
-// Package client -пакет в котором создаем конфиг для клиента
+// Package server -пакет в котором создаем конфиг для клиента
 package client
 
 import (
 	"log"
-	"os"
 
 	"github.com/joho/godotenv"
+	"github.com/kelseyhightower/envconfig"
 )
 
 // ClientConfig - структура, в которую передаем параметры для запуска клиента
 type ClientConfig struct {
-	Url           string
-	PublicKeyPath string
-	HashKey       string
+	Url           string `envconfig:"CLIENT_ENDPOINT"`
+	Port          string `envconfig:"CLIENT_PORT"`
+	PublicKeyPath string `envconfig:"PUBLIC_KEY"`
+	HashKey       string `envconfig:"HASH_KEY"`
 }
 
 type Option func(*ClientConfig)
 
-func withUrl(url string) Option {
+func WithUrl(url string) Option {
 	return func(c *ClientConfig) {
 		c.Url = url
 	}
 }
 
-func withPublicKey(publicKeyPath string) Option {
+func WithPublicKey(publicKeyPath string) Option {
 	return func(c *ClientConfig) {
 		c.PublicKeyPath = publicKeyPath
 	}
 }
 
-func withHashKey(key string) Option {
+func WithHashKey(key string) Option {
 	return func(c *ClientConfig) {
 		c.HashKey = key
 	}
 }
 
-// newClientConfig - создает структуру ClientConfig
-func newClientConfig(option ...Option) *ClientConfig {
+// NewClientConfig - создает структуру ClientConfig
+func NewClientConfig(option ...Option) *ClientConfig {
 	cfg := &ClientConfig{
-		Url:           "localhost:8000",
+		Url:           "localhost:8080",
 		PublicKeyPath: "public.rsa",
 		HashKey:       "cm2984yf2v08ji23r0vhwssdkmvs",
 	}
@@ -52,28 +53,16 @@ func newClientConfig(option ...Option) *ClientConfig {
 
 // NewClient - загружаем данные из переменных окружения или проставляем дефолтные и возвращаем готовый конфиг
 func NewClient() *ClientConfig {
-	var (
-		url       string
-		publicKey string
-		hashKey   string
-	)
-
 	err := godotenv.Load()
 	if err != nil {
 		log.Printf("NewClient: Error loading .env file: %s\n", err.Error())
 	}
 
-	if envPublicKeyPath, ok := os.LookupEnv("PUBLIC_KEY"); ok {
-		publicKey = envPublicKeyPath
+	cfg := &ClientConfig{}
+
+	if err := envconfig.Process("", cfg); err != nil {
+		log.Printf("NewClient: Error process vars: %s\n", err.Error())
 	}
 
-	if envUrl, ok := os.LookupEnv("RUN_ADDRESS"); ok {
-		url = envUrl
-	}
-
-	if envHashKey, ok := os.LookupEnv("HASH_KEY"); ok {
-		hashKey = envHashKey
-	}
-
-	return newClientConfig(withUrl(url), withPublicKey(publicKey), withHashKey(hashKey))
+	return cfg
 }

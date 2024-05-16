@@ -41,7 +41,7 @@ func NewAuthService(newRep *repository.Repository, cfg *server.ServConfig) *Auth
 
 // CreateUser - метод, который создает нового пользователя
 func (s *AuthService) CreateUser(ctx context.Context, user entity.User) (int, error) {
-	user.Password = s.generatePasswordHash(user.Password)
+	user.Password = s.GeneratePasswordHash(user.Password)
 	id, err := s.rep.AuthorizationRepository.SetUserDB(ctx, user)
 	if err != nil {
 		return 0, fmt.Errorf("CreateUser: %w", err)
@@ -62,7 +62,7 @@ func (s *AuthService) ValidateLogin(ctx context.Context, user entity.User) error
 
 // CheckData - метод, который проверяет пользователя с такими данными
 func (s *AuthService) CheckData(ctx context.Context, user entity.User) (int, error) {
-	user.Password = s.generatePasswordHash(user.Password)
+	user.Password = s.GeneratePasswordHash(user.Password)
 	id, err := s.rep.AuthorizationRepository.GetUserFromDB(ctx, user)
 	if err != nil {
 		return 0, fmt.Errorf("CheckData: %w", err)
@@ -110,8 +110,8 @@ func (s *AuthService) GetUserIDFromToken(tokenString string) int {
 	return claims.UserID
 }
 
-// generatePasswordHash - шифрует пароль
-func (s *AuthService) generatePasswordHash(pass string) string {
+// GeneratePasswordHash - шифрует пароль
+func (s *AuthService) GeneratePasswordHash(pass string) string {
 	h := sha256.New()
 	h.Write([]byte(pass))
 	return fmt.Sprintf("%x", h.Sum([]byte(s.cfg.Salt)))

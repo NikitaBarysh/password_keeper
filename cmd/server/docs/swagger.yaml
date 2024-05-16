@@ -1,0 +1,13 @@
+host: localhost:8000
+info:
+  contact: {}
+  description: App, which save secret data
+  title: Password keeper app API
+  version: "1.0"
+paths: {}
+securityDefinitions:
+  ApiKeyAuth:
+    in: header
+    name: Authorization
+    type: apiKey
+swagger: "2.0"

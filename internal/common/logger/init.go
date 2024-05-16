@@ -20,7 +20,7 @@ func InitLogger() *Logger {
 		panic(err)
 	}
 	cfg := zap.NewProductionConfig()
-	cfg.OutputPaths = []string{"project_logs.log"}
+	//cfg.OutputPaths = []string{"project_logs.log"}
 	log, err := cfg.Build()
 	if err != nil {
 		panic(err)

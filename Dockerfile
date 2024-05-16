@@ -1,16 +1,22 @@
-# не работате пока что
 FROM golang
+ARG PORT
+ARG SERVICE
+ARG DB_HOST
+ARG DB_PORT
+ARG DB_DATABASE
+ARG DB_USERNAME
+ARG DB_PASSWORD
 
 WORKDIR .
 
-COPY go.mod go.sum ./
+ENV DB_HOST=$DB_HOST DB_PORT=$DB_PORT DB_DATABASE=$DB_DATABASE DB_USERNAME=$DB_USERNAME DB_PASSWORD=$DB_PASSWORD
+
+COPY go.mod .
 RUN go mod download
 
-EXPOSE 8000
+EXPOSE $PORT
 
 COPY . .
 
-RUN go build -o serv ./cmd/server/main.go
-
-
-CMD ["./serv"]
+RUN go build -o app ./cmd/$SERVICE
+CMD ["./app"]

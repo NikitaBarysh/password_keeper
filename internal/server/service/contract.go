@@ -24,6 +24,7 @@ type AuthorizationService interface {
 	CheckData(ctx context.Context, user entity.User) (int, error)
 	GenerateJWTToken(userID int) (string, error)
 	GetUserIDFromToken(tokenString string) int
+	GeneratePasswordHash(pass string) string
 }
 
 // DataServiceInterface - интерфейс с методами добавления, удаления, получения данных из базы

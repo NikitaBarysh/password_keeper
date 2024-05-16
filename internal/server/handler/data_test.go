@@ -74,7 +74,7 @@ func TestSetData(t *testing.T) {
 			serv := &service.Service{DataServiceInterface: data}
 
 			handler := NewHandler(serv)
-			handler.setData(rw, req.WithContext(ctx))
+			handler.SetData(rw, req.WithContext(ctx))
 
 			res := rw.Result()
 

@@ -1,0 +1,36 @@
+name: CI
+
+on:
+  push:
+    branches:
+      - mvp
+  pull_request:
+    branches:
+      - mvp
+
+jobs:
+
+  test:
+    runs-on: ubuntu-latestv
+
+    services:
+      postgres:
+        image: postgres
+        env:
+          POSTGRES_PASSWORD: qwerty,
+          POSTGRES_DB: postgres
+          POSTGRES_USER: postgres
+        ports:
+          5444:5432
+
+    steps:
+      - name: Checkout mvp
+        uses: action/checkout@2
+
+      - name: Set up GO 1.20
+        uses: action/setup-go@v2
+        with:
+          go-version: 1.20
+
+      - name: Test
+        uses: go test go test password_keeper/internal/server/handler password_keeper/internal/server/service
