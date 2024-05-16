@@ -3,6 +3,7 @@ package service
 import (
 	"context"
 	"errors"
+	"log"
 	"testing"
 
 	_ "github.com/lib/pq"
@@ -57,6 +58,7 @@ func TestServiceCreateUser(t *testing.T) {
 			)
 
 			db, err := repository.InitDataBase(ctx, cfg.DBHost, cfg.DBPort, cfg.DBDatabase, cfg.DBUsername, cfg.DBPassword)
+			log.Println("err: ", err.Error())
 			require.NoError(t, err)
 
 			defer db.Close()
