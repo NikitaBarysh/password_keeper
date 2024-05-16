@@ -47,9 +47,13 @@ func TestSetData(t *testing.T) {
 			c := gomock.NewController(t)
 			defer c.Finish()
 
-			cfg := server.NewServConfig(server.WithDBAddress("localhost"), server.WithDBPort("5432"),
+			cfg := server.NewServConfig(
+				server.WithDBAddress("localhost"),
+				server.WithDBPort("5432"),
 				server.WithDBUsername("postgres"),
-				server.WithDBPassword("qwerty"), server.WithDBDatabase("postgres"))
+				server.WithDBPassword("qwerty"),
+				server.WithDBDatabase("postgres"),
+			)
 
 			db, err := repository.InitDataBase(ctx, cfg.DBHost, cfg.DBPort, cfg.DBDatabase, cfg.DBUsername, cfg.DBPassword)
 			require.NoError(t, err)
@@ -101,9 +105,13 @@ func TestGetData(t *testing.T) {
 			c := gomock.NewController(t)
 			defer c.Finish()
 
-			cfg := server.NewServConfig(server.WithDBAddress("localhost"), server.WithDBPort("5432"),
+			cfg := server.NewServConfig(
+				server.WithDBAddress("localhost"),
+				server.WithDBPort("5432"),
 				server.WithDBUsername("postgres"),
-				server.WithDBPassword("qwerty"), server.WithDBDatabase("postgres"))
+				server.WithDBPassword("qwerty"),
+				server.WithDBDatabase("postgres"),
+			)
 
 			db, err := repository.InitDataBase(ctx, cfg.DBHost, cfg.DBPort, cfg.DBDatabase, cfg.DBUsername, cfg.DBPassword)
 			require.NoError(t, err)
@@ -155,9 +163,13 @@ func TestDeleteData(t *testing.T) {
 			c := gomock.NewController(t)
 			defer c.Finish()
 
-			cfg := server.NewServConfig(server.WithDBAddress("localhost"), server.WithDBPort("5432"),
+			cfg := server.NewServConfig(
+				server.WithDBAddress("localhost"),
+				server.WithDBPort("5432"),
 				server.WithDBUsername("postgres"),
-				server.WithDBPassword("qwerty"), server.WithDBDatabase("postgres"))
+				server.WithDBPassword("qwerty"),
+				server.WithDBDatabase("postgres"),
+			)
 
 			db, err := repository.InitDataBase(ctx, cfg.DBHost, cfg.DBPort, cfg.DBDatabase, cfg.DBUsername, cfg.DBPassword)
 			require.NoError(t, err)
