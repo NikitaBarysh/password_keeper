@@ -24,8 +24,12 @@ jobs:
           - 5444:5432
 
     steps:
-      - name: Checkout mvp
-        uses: action/checkout@2
+      - name: Checkout
+        uses: actions/checkout@v4.1.4
+
+      - name: Setup Go environment
+        uses: actions/setup-go@v5.0.1
+
 
       - name: Setup go deps
         run: |
