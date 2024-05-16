@@ -9,7 +9,6 @@ on:
       - mvp
 
 jobs:
-
   test:
     runs-on: ubuntu-latestv
 
@@ -33,4 +32,4 @@ jobs:
           go-version: 1.20
 
       - name: Test
-        uses: go test go test password_keeper/internal/server/handler password_keeper/internal/server/service
+        uses: go test password_keeper/internal/server/handler password_keeper/internal/server/service
