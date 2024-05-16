@@ -52,8 +52,6 @@ func TestServiceCreateUser(t *testing.T) {
 				server.WithDBUsername("postgres"),
 				server.WithDBPassword("qwerty"), server.WithDBDatabase("postgres"))
 
-			//cfg := server.NewServer()
-
 			db, err := repository.InitDataBase(ctx, cfg.DBHost, cfg.DBPort, cfg.DBDatabase, cfg.DBUsername, cfg.DBPassword)
 			require.NoError(t, err)
 
