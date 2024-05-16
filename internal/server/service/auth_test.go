@@ -50,7 +50,7 @@ func TestServiceCreateUser(t *testing.T) {
 			defer c.Finish()
 
 			cfg := server.NewServConfig(
-				server.WithDBAddress("localhost"),
+				server.WithDBAddress("postgres"),
 				server.WithDBPort("5432"),
 				server.WithDBUsername("postgres"),
 				server.WithDBPassword("qwerty"),
@@ -113,7 +113,7 @@ func TestServiceValidateLogin(t *testing.T) {
 			defer c.Finish()
 
 			cfg := server.NewServConfig(
-				server.WithDBAddress("localhost"),
+				server.WithDBAddress("postgres"),
 				server.WithDBPort("5432"),
 				server.WithDBUsername("postgres"),
 				server.WithDBPassword("qwerty"),
@@ -175,7 +175,7 @@ func TestServiceCheckData(t *testing.T) {
 			defer c.Finish()
 
 			cfg := server.NewServConfig(
-				server.WithDBAddress("localhost"),
+				server.WithDBAddress("postgres"),
 				server.WithDBPort("5432"),
 				server.WithDBUsername("postgres"),
 				server.WithDBPassword("qwerty"),
@@ -225,7 +225,7 @@ func TestGenerateJWT(t *testing.T) {
 			defer c.Finish()
 
 			cfg := server.NewServConfig(
-				server.WithDBAddress("localhost"),
+				server.WithDBAddress("postgres"),
 				server.WithDBPort("5432"),
 				server.WithDBUsername("postgres"),
 				server.WithDBPassword("qwerty"),
