@@ -47,7 +47,7 @@ func TestSetData(t *testing.T) {
 			c := gomock.NewController(t)
 			defer c.Finish()
 
-			cfg := server.NewServConfig(server.WithDBAddress("localhost"), server.WithDBPort("5444"),
+			cfg := server.NewServConfig(server.WithDBAddress("localhost"), server.WithDBPort("5432"),
 				server.WithDBUsername("postgres"),
 				server.WithDBPassword("qwerty"), server.WithDBDatabase("postgres"))
 
@@ -101,7 +101,7 @@ func TestGetData(t *testing.T) {
 			c := gomock.NewController(t)
 			defer c.Finish()
 
-			cfg := server.NewServConfig(server.WithDBAddress("localhost"), server.WithDBPort("5444"),
+			cfg := server.NewServConfig(server.WithDBAddress("localhost"), server.WithDBPort("5432"),
 				server.WithDBUsername("postgres"),
 				server.WithDBPassword("qwerty"), server.WithDBDatabase("postgres"))
 
@@ -155,7 +155,7 @@ func TestDeleteData(t *testing.T) {
 			c := gomock.NewController(t)
 			defer c.Finish()
 
-			cfg := server.NewServConfig(server.WithDBAddress("localhost"), server.WithDBPort("5444"),
+			cfg := server.NewServConfig(server.WithDBAddress("localhost"), server.WithDBPort("5432"),
 				server.WithDBUsername("postgres"),
 				server.WithDBPassword("qwerty"), server.WithDBDatabase("postgres"))
 

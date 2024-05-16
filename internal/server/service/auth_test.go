@@ -48,7 +48,7 @@ func TestServiceCreateUser(t *testing.T) {
 			c := gomock.NewController(t)
 			defer c.Finish()
 
-			cfg := server.NewServConfig(server.WithDBAddress("localhost"), server.WithDBPort("5444"),
+			cfg := server.NewServConfig(server.WithDBAddress("localhost"), server.WithDBPort("5432"),
 				server.WithDBUsername("postgres"),
 				server.WithDBPassword("qwerty"), server.WithDBDatabase("postgres"))
 
@@ -106,7 +106,7 @@ func TestServiceValidateLogin(t *testing.T) {
 			c := gomock.NewController(t)
 			defer c.Finish()
 
-			cfg := server.NewServConfig(server.WithDBAddress("localhost"), server.WithDBPort("5444"),
+			cfg := server.NewServConfig(server.WithDBAddress("localhost"), server.WithDBPort("5432"),
 				server.WithDBUsername("postgres"),
 				server.WithDBPassword("qwerty"), server.WithDBDatabase("postgres"))
 
@@ -164,7 +164,7 @@ func TestServiceCheckData(t *testing.T) {
 			c := gomock.NewController(t)
 			defer c.Finish()
 
-			cfg := server.NewServConfig(server.WithDBAddress("localhost"), server.WithDBPort("5444"),
+			cfg := server.NewServConfig(server.WithDBAddress("localhost"), server.WithDBPort("5432"),
 				server.WithDBUsername("postgres"),
 				server.WithDBPassword("qwerty"), server.WithDBDatabase("postgres"))
 
@@ -210,7 +210,7 @@ func TestGenerateJWT(t *testing.T) {
 			c := gomock.NewController(t)
 			defer c.Finish()
 
-			cfg := server.NewServConfig(server.WithDBAddress("localhost"), server.WithDBPort("5444"),
+			cfg := server.NewServConfig(server.WithDBAddress("localhost"), server.WithDBPort("5432"),
 				server.WithDBUsername("postgres"),
 				server.WithDBPassword("qwerty"), server.WithDBDatabase("postgres"))
 

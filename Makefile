@@ -8,8 +8,8 @@ test.integration:
 	docker run --rm -d -p 5444:5432 --name $$TEST_CONTAINER_NAME -e POSTGRES_PASSWORD=$$TEST_POSTGRES_PASSWORD postgres
 	sleep 1
 	migrate -path ./schema -database 'postgres://postgres:qwerty@localhost:5444/postgres?sslmode=disable' up
-#	go test -v ./tests/
-#	docker stop $$TEST_CONTAINER_NAME
+	go test -v ./tests/
+	docker stop $$TEST_CONTAINER_NAME
 
 unit-test:
 	docker run --rm -d -p 5444:5432 --name $$TEST_CONTAINER_NAME -e POSTGRES_PASSWORD=$$TEST_POSTGRES_PASSWORD postgres
