@@ -51,17 +51,6 @@ jobs:
   test:
     runs-on: ubuntu-latest
 
-    services:
-      postgres:
-        image: postgres
-        env:
-          POSTGRES_PASSWORD: qwerty
-          POSTGRES_DB: postgres
-          POSTGRES_USER: postgres
-        ports:
-          - "5432:5432"
-        options: --health-cmd pg_isready --health-interval 10s --health-timeout 5s --health-retries 5
-
     steps:
       - name: Checkout
         uses: actions/checkout@v4.1.4
@@ -80,17 +69,28 @@ jobs:
           mv migrate.linux-amd64 /usr/local/bin/migrate
           chmod +x /usr/local/bin/migrate
 
+      - name: Create Docker network
+        run: docker network create ci_network
+
+      - name: Run Postgres container
+        run: |
+          docker run --network ci_network --name postgres \
+          -e POSTGRES_PASSWORD=qwerty \
+          -e POSTGRES_DB=postgres \
+          -e POSTGRES_USER=postgres \
+          -d postgres
+
       - name: Migrate Database
-        run: migrate -path ./schema -database 'postgres://postgres:qwerty@localhost:5432/postgres?sslmode=disable' up
+        run: migrate -path ./schema -database 'postgres://postgres:qwerty@postgres:5432/postgres?sslmode=disable' up
 
       - name: Run Docker container
-        run: docker run -p 8000:8000 --name my-server -d ${{ secrets.DOCKER_USERNAME }}/password-keeper-server:latest
+        run: docker run --network ci_network -p 8000:8000 --name my-server -d ${{ secrets.DOCKER_USERNAME }}/password-keeper-server:latest
 
       - name: Wait for server to be ready
         run: |
           echo "Waiting for server to start..."
           for i in {1..60}; do
-            if curl -s http://localhost:8000/health; then
+            if curl -s http://localhost:8000/register; then
               echo "Server is up!"
               exit 0
             fi
@@ -107,6 +107,7 @@ jobs:
         run: |
           docker rm -f my-server
           docker rm -f postgres
+          docker network rm ci_network
 #name: CI
 #
 #on:
