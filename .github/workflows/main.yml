@@ -80,8 +80,11 @@ jobs:
           -e POSTGRES_USER=postgres \
           -d postgres
 
-      - name: Migrate Database
-        run: migrate -path ./schema -database 'postgres://postgres:qwerty@postgres:5432/postgres?sslmode=disable' up
+      - name: Run Migrate in Docker
+        run: |
+          docker run --network ci_network --rm \
+          -v $(pwd)/schema:/schema \
+          migrate/migrate -path=/schema -database 'postgres://postgres:qwerty@postgres:5432/postgres?sslmode=disable' up
 
       - name: Run Docker container
         run: docker run --network ci_network -p 8000:8000 --name my-server -d ${{ secrets.DOCKER_USERNAME }}/password-keeper-server:latest
@@ -90,7 +93,7 @@ jobs:
         run: |
           echo "Waiting for server to start..."
           for i in {1..60}; do
-            if curl -s http://localhost:8000/register; then
+            if curl -s http://localhost:8000/health; then
               echo "Server is up!"
               exit 0
             fi
