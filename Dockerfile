@@ -16,6 +16,8 @@ RUN go mod download
 
 EXPOSE ${PORT}
 
+COPY private.rsa private.rsa
+
 COPY . .
 
 RUN go build -o app ./cmd/${SERVICE}
