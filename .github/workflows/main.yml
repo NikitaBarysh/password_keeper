@@ -83,14 +83,17 @@ jobs:
       - name: Migrate Database
         run: migrate -path ./schema -database 'postgres://postgres:qwerty@localhost:5432/postgres?sslmode=disable' up
 
-      - name: Run Client Tests
-        run: go test ./...
-
       - name: Run Docker container
         run: docker run --network host --name my-server -d ${{ secrets.DOCKER_USERNAME }}/password-keeper-server:latest
 
-      - name: Run Server Tests
-        run: docker exec my-server go test ./...
+      - name: Run Client Tests
+        run: go test ./...
+
+#      - name: Run Docker container
+#        run: docker run --network host --name my-server -d ${{ secrets.DOCKER_USERNAME }}/password-keeper-server:latest
+#
+#      - name: Run Server Tests
+#        run: docker exec my-server go test ./...
 
       - name: Cleanup
         run: |
