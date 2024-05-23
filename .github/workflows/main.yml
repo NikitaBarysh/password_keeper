@@ -62,7 +62,9 @@ jobs:
           password: ${{ secrets.DOCKER_PASSWORD }}
 
       - name: Build Docker image
-        run:  build --build-arg PORT=8000 \                                                                                                                             ─╯
+        run:  |
+          build \
+          --build-arg PORT=8000 \                                                                                                                             ─╯
           --build-arg SERVICE=server/main.go \
           --build-arg DB_HOST=postgres \
           --build-arg DB_PORT=5432 \
