@@ -91,6 +91,19 @@ jobs:
           -e POSTGRES_USER=postgres \
           -d postgres
 
+      - name: Wait for Postgres to be ready
+        run: |
+          echo "Waiting for Postgres to be ready..."
+          for i in {1..30}; do
+            if docker exec postgres pg_isready -U postgres; then
+              echo "Postgres is ready!"
+              exit 0
+            fi
+            sleep 1
+          done
+          echo "Postgres did not start in time" >&2
+          exit 1
+
       - name: Run Migrate in Docker
         run: |
           docker run --network ci_network --rm \
@@ -122,6 +135,7 @@ jobs:
           docker rm -f my-server
           docker rm -f postgres
           docker network rm ci_network
+
 
 #name: CI
 #
