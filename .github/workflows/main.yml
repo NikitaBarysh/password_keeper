@@ -128,8 +128,8 @@ jobs:
           docker logs my-server
           exit 1
 
-      - name: Run Client Tests
-        run: go test ./...
+      - name: Run Tests inside Docker container
+        run: docker exec my-server go test ./...
 
       - name: Cleanup
         run: |
