@@ -90,7 +90,7 @@ jobs:
         run: |
           echo "Waiting for server to start..."
           for i in {1..30}; do
-            if curl -s http://localhost:8000/health; then
+            if curl -s http://localhost:8000/register; then
               echo "Server is up!"
               exit 0
             fi
