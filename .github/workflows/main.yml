@@ -63,7 +63,7 @@ jobs:
 
       - name: Build Docker image
         run:  |
-          build \
+          docker build \
           --build-arg PORT=8000 \                                                                                                                             ─╯
           --build-arg SERVICE=server/main.go \
           --build-arg DB_HOST=postgres \
