@@ -201,7 +201,7 @@ func (s *Sender) ConnectWs() error {
 	header := http.Header{}
 	header.Set("authorization", s.token)
 
-	URL := url.URL{Scheme: "ws", Path: "/ws/connect", Host: "localhost:8080"} // TODO улучшить аддрес
+	URL := url.URL{Scheme: "ws", Path: "/ws/connect", Host: "localhost:8080"}
 
 	c, _, err := websocket.DefaultDialer.Dial(URL.String(), header)
 	if err != nil {

@@ -10,14 +10,10 @@ import (
 	"password_keeper/internal/common/entity"
 )
 
-// Для теста для начала нужно запустить сервер, получить токен авторизованного пользователя и поменять токен на полученный
-var tok = "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjE3NTE3Njc2NTMsIlVzZXJJRCI6M30.L_nb24gCL163FFNJsfgvIsqY3u_dho2f6VdJLySEVe8"
-
 func TestSenderPostUser(t *testing.T) {
 	type mockBehaviour func(s *MockSendInterface)
 	tests := []struct {
 		name    string
-		token   string
 		mock    mockBehaviour
 		user    entity.User
 		wantErr error
@@ -101,7 +97,6 @@ func TestSenderPostData(t *testing.T) {
 	type mockBehaviour func(s *MockSendInterface)
 	tests := []struct {
 		name      string
-		token     string
 		mock      mockBehaviour
 		testData  string
 		testEvent string
@@ -113,7 +108,6 @@ func TestSenderPostData(t *testing.T) {
 	}{
 		{
 			name:      "Ok",
-			token:     tok,
 			mock:      func(s *MockSendInterface) {},
 			testData:  "hi",
 			testEvent: "testPostData",
@@ -123,19 +117,8 @@ func TestSenderPostData(t *testing.T) {
 			port:      "8000",
 			path:      "register",
 		},
-		//{
-		//	name:      "Empty token",
-		//	token:     "",
-		//	mock:      func(s *MockSendInterface) {},
-		//	testData:  "hi",
-		//	testEvent: "test",
-		//	wantErr:   errors.New("Token is empty, try to login "),
-		//	hashKey:   "some",
-		//	host:   "localhost:8000",
-		//}, TODO подумать, как сделать проверку на отсутствие токена
 		{
 			name:     "No event",
-			token:    tok,
 			mock:     func(s *MockSendInterface) {},
 			testData: "hi",
 			wantErr:  errors.New("Add event "),
@@ -146,7 +129,6 @@ func TestSenderPostData(t *testing.T) {
 		},
 		{
 			name:      "No hash func",
-			token:     tok,
 			mock:      func(s *MockSendInterface) {},
 			testData:  "hi",
 			testEvent: "test",
@@ -157,7 +139,6 @@ func TestSenderPostData(t *testing.T) {
 		},
 		{
 			name:      "Err to do request",
-			token:     tok,
 			mock:      func(s *MockSendInterface) {},
 			testData:  "hi",
 			testEvent: "test",
@@ -201,7 +182,6 @@ func TestSenderGetData(t *testing.T) {
 	type mockBehaviour func(s *MockSendInterface)
 	tests := []struct {
 		name      string
-		token     string
 		mock      mockBehaviour
 		testEvent string
 		wantErr   error
@@ -211,7 +191,6 @@ func TestSenderGetData(t *testing.T) {
 	}{
 		{
 			name:      "Ok",
-			token:     tok,
 			mock:      func(s *MockSendInterface) {},
 			testEvent: "testPostData",
 			wantErr:   nil,
@@ -230,7 +209,6 @@ func TestSenderGetData(t *testing.T) {
 		},
 		{
 			name:      "Err to do request",
-			token:     tok,
 			mock:      func(s *MockSendInterface) {},
 			testEvent: "test",
 			wantErr:   errors.New("err do request"),
@@ -238,7 +216,6 @@ func TestSenderGetData(t *testing.T) {
 		},
 		{
 			name:      "Empty hash key",
-			token:     tok,
 			mock:      func(s *MockSendInterface) {},
 			testEvent: "test",
 			wantErr:   errors.New("Empty hash key "),
@@ -292,7 +269,6 @@ func TestSenderDeleteData(t *testing.T) {
 	}{
 		{
 			name:      "Ok",
-			token:     tok,
 			mock:      func(s *MockSendInterface) {},
 			testEvent: "testPostData",
 			wantErr:   nil,
@@ -302,7 +278,6 @@ func TestSenderDeleteData(t *testing.T) {
 		},
 		{
 			name:      "err to do request",
-			token:     tok,
 			mock:      func(s *MockSendInterface) {},
 			testEvent: "testPostData",
 			wantErr:   errors.New("err to do request"),
