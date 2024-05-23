@@ -5,8 +5,8 @@ TEST_SERVER_NAME=test-server
 TEST_POSTGRES_PASSWORD=qwerty
 NETWORK_NAME=my-network
 
-# Тесты сейчас сделаны под github action
 
+# если нужно запустить тесты локально, то в тесте в интеграционном тесте TestSignUp поменять ожидаемый id с 6 на 2
 test.integration:
 	echo "Starting PostgreSQL container for integration tests"
 	docker run --rm -d \
@@ -142,6 +142,8 @@ sender-test:
 		docker network rm $(NETWORK_NAME); \
 	fi
 
+migration:
+	migrate -path ./schema -database 'postgres://postgres:qwerty@localhost:5432/postgres?sslmode=disable' up
 
 docker-stop:
 	docker stop $(TEST_CONTAINER_NAME)

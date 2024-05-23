@@ -12,7 +12,7 @@ import (
 	"password_keeper/internal/common/entity"
 )
 
-func (s *APITestSuite) TestSignUp() {
+func (s *APITestSuite) TestASignUp() {
 	r := s.Require()
 
 	rctx := chi.NewRouter()
@@ -52,13 +52,13 @@ func (s *APITestSuite) TestSignUp() {
 		s.FailNow("Failed to get user", err)
 	}
 
-	r.Equal(6, id)
+	r.Equal(6, id) // TODO менять id на 2 для локальных тестов, на 6 для github action
 
 	err = s.rep.Validate(context.Background(), login)
 	s.EqualError(err, "Validate: err to get id: %!w(<nil>) ")
 }
 
-func (s *APITestSuite) TestSignUpSameData() {
+func (s *APITestSuite) TestBSignUpSameData() {
 	r := s.Require()
 	rctx := chi.NewRouter()
 	s.handler.Register(rctx)
@@ -83,7 +83,7 @@ func (s *APITestSuite) TestSignUpSameData() {
 	r.Equal(http.StatusConflict, resp.Code)
 }
 
-func (s *APITestSuite) TestLogin() {
+func (s *APITestSuite) TestCLogin() {
 	r := s.Require()
 
 	rctx := chi.NewRouter()
@@ -110,7 +110,7 @@ func (s *APITestSuite) TestLogin() {
 	r.Equal(http.StatusOK, resp.Code)
 }
 
-func (s *APITestSuite) TestWrongLogin() {
+func (s *APITestSuite) TestDWrongLogin() {
 	r := s.Require()
 
 	rctx := chi.NewRouter()

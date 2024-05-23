@@ -48,11 +48,11 @@ func TestSetData(t *testing.T) {
 			defer c.Finish()
 
 			cfg := server.NewServConfig(
-				server.WithDBAddress(dbAddress),
-				server.WithDBPort("5432"),
-				server.WithDBUsername("postgres"),
-				server.WithDBPassword("qwerty"),
-				server.WithDBDatabase("postgres"),
+				server.WithDBAddress(getEnv("DB_HOST", defaultDBHost)),
+				server.WithDBPort(getEnv("DB_PORT", defaultDBPort)),
+				server.WithDBUsername(getEnv("DB_USER", defaultDBUser)),
+				server.WithDBPassword(getEnv("DB_PASSWORD", defaultDBPassword)),
+				server.WithDBDatabase(getEnv("DB_NAME", defaultDBName)),
 			)
 
 			db, err := repository.InitDataBase(ctx, cfg.DBHost, cfg.DBPort, cfg.DBDatabase, cfg.DBUsername, cfg.DBPassword)
@@ -106,11 +106,11 @@ func TestGetData(t *testing.T) {
 			defer c.Finish()
 
 			cfg := server.NewServConfig(
-				server.WithDBAddress(dbAddress),
-				server.WithDBPort("5432"),
-				server.WithDBUsername("postgres"),
-				server.WithDBPassword("qwerty"),
-				server.WithDBDatabase("postgres"),
+				server.WithDBAddress(getEnv("DB_HOST", defaultDBHost)),
+				server.WithDBPort(getEnv("DB_PORT", defaultDBPort)),
+				server.WithDBUsername(getEnv("DB_USER", defaultDBUser)),
+				server.WithDBPassword(getEnv("DB_PASSWORD", defaultDBPassword)),
+				server.WithDBDatabase(getEnv("DB_NAME", defaultDBName)),
 			)
 
 			db, err := repository.InitDataBase(ctx, cfg.DBHost, cfg.DBPort, cfg.DBDatabase, cfg.DBUsername, cfg.DBPassword)
@@ -164,11 +164,11 @@ func TestDeleteData(t *testing.T) {
 			defer c.Finish()
 
 			cfg := server.NewServConfig(
-				server.WithDBAddress(dbAddress),
-				server.WithDBPort("5432"),
-				server.WithDBUsername("postgres"),
-				server.WithDBPassword("qwerty"),
-				server.WithDBDatabase("postgres"),
+				server.WithDBAddress(getEnv("DB_HOST", defaultDBHost)),
+				server.WithDBPort(getEnv("DB_PORT", defaultDBPort)),
+				server.WithDBUsername(getEnv("DB_USER", defaultDBUser)),
+				server.WithDBPassword(getEnv("DB_PASSWORD", defaultDBPassword)),
+				server.WithDBDatabase(getEnv("DB_NAME", defaultDBName)),
 			)
 
 			db, err := repository.InitDataBase(ctx, cfg.DBHost, cfg.DBPort, cfg.DBDatabase, cfg.DBUsername, cfg.DBPassword)
