@@ -3,6 +3,7 @@ package service
 import (
 	"context"
 	"errors"
+	"os"
 	"testing"
 
 	_ "github.com/lib/pq"
@@ -13,6 +14,21 @@ import (
 	"password_keeper/internal/common/entity"
 	"password_keeper/internal/server/repository"
 )
+
+const (
+	defaultDBHost     = "localhost"
+	defaultDBPort     = "5432"
+	defaultDBUser     = "postgres"
+	defaultDBPassword = "qwerty"
+	defaultDBName     = "postgres"
+)
+
+func getEnv(key, defaultValue string) string {
+	if value, exists := os.LookupEnv(key); exists {
+		return value
+	}
+	return defaultValue
+}
 
 const dbAddress = "postgres"
 
@@ -51,11 +67,11 @@ func TestServiceCreateUser(t *testing.T) {
 			defer c.Finish()
 
 			cfg := server.NewServConfig(
-				server.WithDBAddress(dbAddress),
-				server.WithDBPort("5432"),
-				server.WithDBUsername("postgres"),
-				server.WithDBPassword("qwerty"),
-				server.WithDBDatabase("postgres"),
+				server.WithDBAddress(getEnv("DB_HOST", defaultDBHost)),
+				server.WithDBPort(getEnv("DB_PORT", defaultDBPort)),
+				server.WithDBUsername(getEnv("DB_USER", defaultDBUser)),
+				server.WithDBPassword(getEnv("DB_PASSWORD", defaultDBPassword)),
+				server.WithDBDatabase(getEnv("DB_NAME", defaultDBName)),
 			)
 
 			db, err := repository.InitDataBase(ctx, cfg.DBHost, cfg.DBPort, cfg.DBDatabase, cfg.DBUsername, cfg.DBPassword)

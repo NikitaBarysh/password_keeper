@@ -112,7 +112,13 @@ jobs:
           migrate/migrate -path=/schema -database 'postgres://postgres:qwerty@postgres:5432/postgres?sslmode=disable' up
 
       - name: Run Docker container
-        run: docker run --network ci_network -p 8000:8000 --name my-server -d ${{ secrets.DOCKER_USERNAME }}/password-keeper-server:latest
+        run: docker run --network ci_network -p 8000:8000 --name my-server -d \
+          -e DB_HOST=postgres \
+          -e DB_PORT=5432 \
+          -e DB_USER=postgres \
+          -e DB_PASSWORD=qwerty \
+          -e DB_NAME=postgres \
+          ${{ secrets.DOCKER_USERNAME }}/password-keeper-server:latest
 
       - name: Wait for server to be ready
         run: |
