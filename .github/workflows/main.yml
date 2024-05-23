@@ -112,7 +112,8 @@ jobs:
           migrate/migrate -path=/schema -database 'postgres://postgres:qwerty@postgres:5432/postgres?sslmode=disable' up
 
       - name: Run Docker container
-        run: docker run --network ci_network -p 8000:8000 --name my-server -d \
+        run: |
+          docker run --network ci_network -p 8000:8000 --name my-server -d \
           -e DB_HOST=postgres \
           -e DB_PORT=5432 \
           -e DB_USER=postgres \
