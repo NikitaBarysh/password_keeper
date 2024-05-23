@@ -52,7 +52,7 @@ func (s *APITestSuite) TestSignUp() {
 		s.FailNow("Failed to get user", err)
 	}
 
-	r.Equal(4, id)
+	r.Equal(6, id)
 
 	err = s.rep.Validate(context.Background(), login)
 	s.EqualError(err, "Validate: err to get id: %!w(<nil>) ")
