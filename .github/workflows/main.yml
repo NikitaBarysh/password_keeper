@@ -84,7 +84,7 @@ jobs:
         run: migrate -path ./schema -database 'postgres://postgres:qwerty@localhost:5432/postgres?sslmode=disable' up
 
       - name: Run Docker container
-        run: docker run --network host --name my-server -d ${{ secrets.DOCKER_USERNAME }}/password-keeper-server:latest
+        run: docker run -p 8000:8000 --name my-server -d ${{ secrets.DOCKER_USERNAME }}/password-keeper-server:latest
 
       - name: Run Client Tests
         run: go test ./...
