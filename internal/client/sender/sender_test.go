@@ -29,7 +29,7 @@ func TestSenderPostUser(t *testing.T) {
 			name:    "Ok",
 			mock:    func(s *MockSendInterface) {},
 			wantErr: nil,
-			address: "localhost:8000",
+			address: "8000",
 			user: entity.User{ // Если проверять, то нужно рандомные значение, т.к. эти будут уже в базе
 				Login:    "testSenderPost",
 				Password: "testSenderPost",
@@ -53,7 +53,7 @@ func TestSenderPostUser(t *testing.T) {
 			name:    "status not 200",
 			mock:    func(s *MockSendInterface) {},
 			wantErr: errors.New("status not 200"),
-			address: "localhost:8000",
+			address: "8000",
 			user: entity.User{
 				Login:    "testSenderPost",
 				Password: "testSenderPost",
