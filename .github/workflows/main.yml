@@ -136,7 +136,9 @@ jobs:
           exit 1
 
       - name: Run Tests inside Docker container
-        run: docker exec my-server go test ./internal/server/service ./internal/server/client ./tests
+        run: |
+            docker exec my-server go test $(go list ./...)
+      
 
       - name: Cleanup
         run: |
