@@ -54,7 +54,7 @@ func NewSender(cfg *client.ClientConfig) (*Sender, error) {
 		return nil, fmt.Errorf("NewSender: %w", err)
 	}
 
-	newURL := fmt.Sprintf("%s:%s", cfg.Url, cfg.Port)
+	newURL := fmt.Sprintf("%s:%s", cfg.Host, cfg.Port)
 	return &Sender{
 		client:     newClient,
 		encrypt:    enc,
@@ -340,6 +340,41 @@ func (s *Sender) checker() error {
 	}
 
 	return nil
+}
+
+func (s *Sender) getTokenForTest(path string) (string, error) {
+	body := entity.User{
+		Login:    "testUserForDataTest",
+		Password: "testUserForDataTest",
+	}
+
+	b, err := s.encryptUser(body)
+	if err != nil {
+		return "", fmt.Errorf("PostUserRequest: %w", err)
+	}
+
+	url := fmt.Sprintf("http://%s/%s", "localhost:8000", path)
+
+	req, err := http.NewRequest(http.MethodPost, url, bytes.NewBuffer(b))
+	if err != nil {
+		return "", fmt.Errorf("PostUserRequest: %w", err)
+	}
+
+	resp, err := s.client.Do(req)
+	if err != nil {
+		return "", fmt.Errorf("PostUserRequest: %w", err)
+	}
+
+	if resp.StatusCode/100 != 2 {
+		return "", errors.New("PostUserRequest: Failed to register user: status not 200 ")
+	}
+
+	h := resp.Header.Get("Authorization")
+	if h == "" {
+		return "", errors.New("parseAuthToken: Authorization header is empty ")
+	}
+
+	return h, nil
 }
 
 // input - считывает команды с консоли

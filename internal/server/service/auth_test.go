@@ -14,6 +14,8 @@ import (
 	"password_keeper/internal/server/repository"
 )
 
+const dbAddress = "localhost"
+
 func TestServiceCreateUser(t *testing.T) {
 	type mockBehaviour func(s *MockAuthorizationService)
 	ctx := context.Background()
@@ -49,7 +51,7 @@ func TestServiceCreateUser(t *testing.T) {
 			defer c.Finish()
 
 			cfg := server.NewServConfig(
-				server.WithDBAddress("postgres"),
+				server.WithDBAddress(dbAddress),
 				server.WithDBPort("5432"),
 				server.WithDBUsername("postgres"),
 				server.WithDBPassword("qwerty"),
@@ -111,7 +113,7 @@ func TestServiceValidateLogin(t *testing.T) {
 			defer c.Finish()
 
 			cfg := server.NewServConfig(
-				server.WithDBAddress("postgres"),
+				server.WithDBAddress(dbAddress),
 				server.WithDBPort("5432"),
 				server.WithDBUsername("postgres"),
 				server.WithDBPassword("qwerty"),
@@ -173,7 +175,7 @@ func TestServiceCheckData(t *testing.T) {
 			defer c.Finish()
 
 			cfg := server.NewServConfig(
-				server.WithDBAddress("postgres"),
+				server.WithDBAddress(dbAddress),
 				server.WithDBPort("5432"),
 				server.WithDBUsername("postgres"),
 				server.WithDBPassword("qwerty"),
@@ -223,7 +225,7 @@ func TestGenerateJWT(t *testing.T) {
 			defer c.Finish()
 
 			cfg := server.NewServConfig(
-				server.WithDBAddress("postgres"),
+				server.WithDBAddress(dbAddress),
 				server.WithDBPort("5432"),
 				server.WithDBUsername("postgres"),
 				server.WithDBPassword("qwerty"),

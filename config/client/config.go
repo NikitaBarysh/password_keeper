@@ -10,7 +10,7 @@ import (
 
 // ClientConfig - структура, в которую передаем параметры для запуска клиента
 type ClientConfig struct {
-	Url           string `envconfig:"CLIENT_ENDPOINT"`
+	Host          string `envconfig:"CLIENT_ENDPOINT"`
 	Port          string `envconfig:"CLIENT_PORT"`
 	PublicKeyPath string `envconfig:"PUBLIC_KEY"`
 	HashKey       string `envconfig:"HASH_KEY"`
@@ -20,7 +20,7 @@ type Option func(*ClientConfig)
 
 func WithUrl(url string) Option {
 	return func(c *ClientConfig) {
-		c.Url = url
+		c.Host = url
 	}
 }
 
@@ -39,7 +39,7 @@ func WithHashKey(key string) Option {
 // NewClientConfig - создает структуру ClientConfig
 func NewClientConfig(option ...Option) *ClientConfig {
 	cfg := &ClientConfig{
-		Url:           "localhost:8080",
+		Host:          "localhost:8000",
 		PublicKeyPath: "public.rsa",
 		HashKey:       "cm2984yf2v08ji23r0vhwssdkmvs",
 	}

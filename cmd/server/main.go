@@ -65,7 +65,7 @@ func main() {
 	srv := new(app.Server)
 	go func() {
 		if err = srv.Run(cfg.Endpoint, router); err != nil {
-			logging.Fatal("Main client:Err to start client: %s", err.Error())
+			logging.Fatal("Main server:Err to start client: %s", err.Error())
 		}
 	}()
 	logging.Info("Server start")

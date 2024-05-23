@@ -48,7 +48,7 @@ func TestSetData(t *testing.T) {
 			defer c.Finish()
 
 			cfg := server.NewServConfig(
-				server.WithDBAddress("postgres"),
+				server.WithDBAddress(dbAddress),
 				server.WithDBPort("5432"),
 				server.WithDBUsername("postgres"),
 				server.WithDBPassword("qwerty"),
@@ -106,7 +106,7 @@ func TestGetData(t *testing.T) {
 			defer c.Finish()
 
 			cfg := server.NewServConfig(
-				server.WithDBAddress("postgres"),
+				server.WithDBAddress(dbAddress),
 				server.WithDBPort("5432"),
 				server.WithDBUsername("postgres"),
 				server.WithDBPassword("qwerty"),
@@ -164,7 +164,7 @@ func TestDeleteData(t *testing.T) {
 			defer c.Finish()
 
 			cfg := server.NewServConfig(
-				server.WithDBAddress("postgres"),
+				server.WithDBAddress(dbAddress),
 				server.WithDBPort("5432"),
 				server.WithDBUsername("postgres"),
 				server.WithDBPassword("qwerty"),
