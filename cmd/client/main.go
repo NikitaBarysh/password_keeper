@@ -27,7 +27,7 @@ const (
 
 func main() {
 	logging := logger.InitLogger()
-	log.Println("Version: %s, Time: %s", Version, BuildTime)
+	log.Printf("Version: %s, Time: %s", Version, BuildTime)
 
 	cfg := client.NewClient()
 
@@ -98,8 +98,7 @@ func read(action string) string {
 	act, err := reader.ReadString('\n')
 	act = strings.Replace(act, "\n", "", -1)
 	if err != nil {
-		fmt.Println(fmt.Errorf("Error reading input: %s \n", err))
+		fmt.Println(fmt.Errorf("read: Error reading input: %s \n", err))
 	}
-
 	return act
 }

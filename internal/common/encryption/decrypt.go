@@ -1,3 +1,4 @@
+// Package encryption - пакет, в котором происходит шифрование данных
 package encryption
 
 import (
@@ -10,26 +11,29 @@ import (
 	"os"
 )
 
+// dataDecryptor - для передачи в middleware без инициализации в нем
 var dataDecryptor *Decryptor
 
+// Decryptor - структура, которая хранит приватный ключ для расшифровки данных
 type Decryptor struct {
 	privateKey *rsa.PrivateKey
 }
 
+// InitDecryptor - создаем приватный ключ
 func InitDecryptor(file string) error {
 	key, err := os.ReadFile(file)
 	if err != nil {
-		return fmt.Errorf("err to read file: %w", err)
+		return fmt.Errorf("InitDecryptor: err to read file: %w", err)
 	}
 
 	keyBlock, _ := pem.Decode([]byte(key))
 	if keyBlock == nil {
-		return fmt.Errorf("err to decode private key")
+		return fmt.Errorf("InitDecryptor: err to decode private key")
 	}
 
 	privateKey, err := x509.ParsePKCS1PrivateKey(keyBlock.Bytes)
 	if err != nil {
-		return fmt.Errorf("err to parse privat key: %w", err)
+		return fmt.Errorf("InitDecryptor: err to parse privat key: %w", err)
 	}
 
 	dataDecryptor = &Decryptor{privateKey: privateKey}
@@ -37,6 +41,7 @@ func InitDecryptor(file string) error {
 	return nil
 }
 
+// Decrypt - метод, который расшифровывает данные с помощью приватного ключа
 func (m *Decryptor) Decrypt(msg []byte) ([]byte, error) {
 	msgLen := len(msg)
 	hash := sha512.New()
@@ -53,7 +58,7 @@ func (m *Decryptor) Decrypt(msg []byte) ([]byte, error) {
 
 		decryptedBlockBytes, err := rsa.DecryptOAEP(hash, random, m.privateKey, msg[start:finish], nil)
 		if err != nil {
-			return nil, fmt.Errorf("decrypt part message process error: %w", err)
+			return nil, fmt.Errorf("Decrypt: decrypt part message process error: %w ", err)
 		}
 
 		decryptedBytes = append(decryptedBytes, decryptedBlockBytes...)

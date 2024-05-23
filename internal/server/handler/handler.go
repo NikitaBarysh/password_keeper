@@ -3,10 +3,12 @@ package handler
 import (
 	"net/http"
 
-	"github.com/go-chi/chi/v5"
+	httpSwagger "github.com/swaggo/http-swagger"
 	"password_keeper/internal/common/encryption"
 	"password_keeper/internal/common/logger"
 	"password_keeper/internal/server/service"
+
+	"github.com/go-chi/chi/v5"
 )
 
 type Handler struct {
@@ -31,7 +33,7 @@ func (h *Handler) Register(router *chi.Mux) {
 
 		router.Route("/api", func(router chi.Router) {
 			router.Use(h.AuthorizationMiddleware)
-			router.Post("/set/{event}", h.setData)
+			router.Post("/set/{event}", h.SetData)
 			router.Get("/get/{event}", h.getData)
 			router.Delete("/delete/{event}", h.deleteData)
 		})
@@ -42,4 +44,6 @@ func (h *Handler) Register(router *chi.Mux) {
 		router.Handle("/connect", http.HandlerFunc(h.handleSetWebsocket))
 	})
 
+	router.Get("/swagger/*", httpSwagger.Handler(
+		httpSwagger.URL("http://localhost:8000/swagger/doc.json")))
 }

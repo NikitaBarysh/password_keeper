@@ -65,6 +65,20 @@ func (mr *MockAuthorizationRepositoryMockRecorder) SetUserDB(ctx, user interface
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "SetUserDB", reflect.TypeOf((*MockAuthorizationRepository)(nil).SetUserDB), ctx, user)
 }
 
+// Validate mocks base method.
+func (m *MockAuthorizationRepository) Validate(ctx context.Context, username string) error {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "Validate", ctx, username)
+	ret0, _ := ret[0].(error)
+	return ret0
+}
+
+// Validate indicates an expected call of Validate.
+func (mr *MockAuthorizationRepositoryMockRecorder) Validate(ctx, username interface{}) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "Validate", reflect.TypeOf((*MockAuthorizationRepository)(nil).Validate), ctx, username)
+}
+
 // MockDataRepositoryInterface is a mock of DataRepositoryInterface interface.
 type MockDataRepositoryInterface struct {
 	ctrl     *gomock.Controller

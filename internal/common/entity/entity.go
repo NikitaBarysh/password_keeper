@@ -1,3 +1,4 @@
+// Package entity - пакет в котором лежат сущности проекта
 package entity
 
 type User struct {

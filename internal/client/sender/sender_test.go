@@ -2,7 +2,6 @@ package sender
 
 import (
 	"errors"
-	"net/http"
 	"testing"
 
 	"github.com/golang/mock/gomock"
@@ -11,92 +10,10 @@ import (
 	"password_keeper/internal/common/entity"
 )
 
-func TestSenderPostData(t *testing.T) {
-	const tok = "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjE3NTA4MDU0MzEsIlVzZXJJRCI6MTV9.MJhrMEyqIMfD9mfMEHl75iNvT34tBKwntYPo7dFEZvA"
-	type mockBehaviour func(s *MockSendInterface)
-	tests := []struct {
-		name      string
-		token     string
-		mock      mockBehaviour
-		testData  string
-		testEvent string
-		wantErr   error
-		hashKey   string
-		address   string
-	}{
-		{
-			name:      "Ok",
-			token:     tok,
-			mock:      func(s *MockSendInterface) {},
-			testData:  "hi",
-			testEvent: "testPostData",
-			wantErr:   nil,
-			hashKey:   "some",
-			address:   "localhost:8080",
-		},
-		{
-			name:      "Empty token",
-			token:     "",
-			mock:      func(s *MockSendInterface) {},
-			testData:  "hi",
-			testEvent: "test",
-			wantErr:   errors.New("Token is empty, try to login "),
-			hashKey:   "some",
-			address:   "localhost:8080",
-		},
-		{
-			name:     "No event",
-			token:    tok,
-			mock:     func(s *MockSendInterface) {},
-			testData: "hi",
-			wantErr:  errors.New("Add event "),
-			hashKey:  "some",
-			address:  "localhost:8080",
-		},
-		{
-			name:      "No hash func",
-			token:     tok,
-			mock:      func(s *MockSendInterface) {},
-			testData:  "hi",
-			testEvent: "test",
-			wantErr:   errors.New("Empty hash key "),
-			address:   "localhost:8080",
-		},
-		{
-			name:      "Err to do request",
-			token:     tok,
-			mock:      func(s *MockSendInterface) {},
-			testData:  "hi",
-			testEvent: "test",
-			hashKey:   "some",
-			wantErr:   errors.New("err do request"),
-		},
-	}
-
-	for _, test := range tests {
-		t.Run(test.name, func(t *testing.T) {
-			c := gomock.NewController(t)
-			defer c.Finish()
-
-			s := NewMockSendInterface(c)
-			test.mock(s)
-
-			sss := &Sender{token: test.token, hashKey: test.hashKey, client: http.DefaultClient,
-				address: test.address}
-
-			if err := sss.PostDataRequest(test.testData, test.testEvent); (err != nil) != (test.wantErr != nil) {
-				t.Errorf("PostDataRequest() error = %v, wantErr %v", err, (test.wantErr != nil))
-			}
-		})
-	}
-}
-
 func TestSenderPostUser(t *testing.T) {
-	const tok = "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjE3NTA4MDU0MzEsIlVzZXJJRCI6MTV9.MJhrMEyqIMfD9mfMEHl75iNvT34tBKwntYPo7dFEZvA"
 	type mockBehaviour func(s *MockSendInterface)
 	tests := []struct {
 		name    string
-		token   string
 		mock    mockBehaviour
 		user    entity.User
 		wantErr error
@@ -108,10 +25,10 @@ func TestSenderPostUser(t *testing.T) {
 			name:    "Ok",
 			mock:    func(s *MockSendInterface) {},
 			wantErr: nil,
-			address: "localhost:8080",
+			address: "localhost:8000",
 			user: entity.User{ // Если проверять, то нужно рандомные значение, т.к. эти будут уже в базе
-				Login:    "testdacacfaxssdaascaaafsaafsssfs",
-				Password: "testvsvsvdcsacasaaacsazxxaasvsv",
+				Login:    "testSenderPost",
+				Password: "testSenderPost",
 			},
 			action: "register",
 			pubKey: "./public.rsa",
@@ -132,10 +49,10 @@ func TestSenderPostUser(t *testing.T) {
 			name:    "status not 200",
 			mock:    func(s *MockSendInterface) {},
 			wantErr: errors.New("status not 200"),
-			address: "localhost:8080",
+			address: "localhost:8000",
 			user: entity.User{
-				Login:    "test",
-				Password: "test",
+				Login:    "testSenderPost",
+				Password: "testSenderPost",
 			},
 
 			action: "register",
@@ -159,7 +76,7 @@ func TestSenderPostUser(t *testing.T) {
 			defer c.Finish()
 
 			cfg := &client.ClientConfig{
-				Url:           test.address,
+				Host:          test.address,
 				PublicKeyPath: test.pubKey,
 			}
 
@@ -170,32 +87,116 @@ func TestSenderPostUser(t *testing.T) {
 			test.mock(s)
 
 			if err := sender.PostUserRequest(test.user.Login, test.user.Password, test.action); (err != nil) != (test.wantErr != nil) {
-				t.Errorf("PostUserRequest() error = %v, wantErr %v", err, (test.wantErr != nil))
+				t.Errorf("PostUserRequest() error = %v, wantErr %v", err, test.wantErr != nil)
+			}
+		})
+	}
+}
+
+func TestSenderPostData(t *testing.T) {
+	type mockBehaviour func(s *MockSendInterface)
+	tests := []struct {
+		name      string
+		mock      mockBehaviour
+		testData  string
+		testEvent string
+		wantErr   error
+		hashKey   string
+		host      string
+		port      string
+		path      string
+	}{
+		{
+			name:      "Ok",
+			mock:      func(s *MockSendInterface) {},
+			testData:  "hi",
+			testEvent: "testPostData",
+			wantErr:   nil,
+			hashKey:   "some",
+			host:      "localhost",
+			port:      "8000",
+			path:      "register",
+		},
+		{
+			name:     "No event",
+			mock:     func(s *MockSendInterface) {},
+			testData: "hi",
+			wantErr:  errors.New("Add event "),
+			hashKey:  "some",
+			host:     "localhost",
+			port:     "8000",
+			path:     "login",
+		},
+		{
+			name:      "No hash func",
+			mock:      func(s *MockSendInterface) {},
+			testData:  "hi",
+			testEvent: "test",
+			wantErr:   errors.New("Empty hash key "),
+			host:      "localhost",
+			port:      "8000",
+			path:      "login",
+		},
+		{
+			name:      "Err to do request",
+			mock:      func(s *MockSendInterface) {},
+			testData:  "hi",
+			testEvent: "test",
+			hashKey:   "some",
+			wantErr:   errors.New("err do request"),
+			path:      "login",
+		},
+	}
+
+	for _, test := range tests {
+		t.Run(test.name, func(t *testing.T) {
+			c := gomock.NewController(t)
+			defer c.Finish()
+
+			cfg := &client.ClientConfig{
+				Host:          test.host,
+				Port:          test.port,
+				PublicKeyPath: "./public.rsa",
+				HashKey:       test.hashKey,
+			}
+
+			sender, err := NewSender(cfg)
+			require.NoError(t, err)
+
+			s := NewMockSendInterface(c)
+			test.mock(s)
+
+			token, err := sender.getTokenForTest(test.path)
+			require.NoError(t, err)
+
+			sender.token = token
+
+			if err := sender.PostDataRequest(test.testData, test.testEvent); (err != nil) != (test.wantErr != nil) {
+				t.Errorf("PostDataRequest() error = %v, wantErr %v", err, test.wantErr != nil)
 			}
 		})
 	}
 }
 
 func TestSenderGetData(t *testing.T) {
-	const tok = "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjE3NTA4MDU0MzEsIlVzZXJJRCI6MTV9.MJhrMEyqIMfD9mfMEHl75iNvT34tBKwntYPo7dFEZvA"
 	type mockBehaviour func(s *MockSendInterface)
 	tests := []struct {
 		name      string
-		token     string
 		mock      mockBehaviour
 		testEvent string
 		wantErr   error
 		hashKey   string
-		address   string
+		host      string
+		port      string
 	}{
 		{
 			name:      "Ok",
-			token:     tok,
 			mock:      func(s *MockSendInterface) {},
-			testEvent: "test",
+			testEvent: "testPostData",
 			wantErr:   nil,
 			hashKey:   "some",
-			address:   "localhost:8080",
+			host:      "localhost",
+			port:      "8000",
 		},
 		{
 			name:      "Empty token",
@@ -203,11 +204,11 @@ func TestSenderGetData(t *testing.T) {
 			testEvent: "test",
 			wantErr:   errors.New("Token is empty, try to login "),
 			hashKey:   "some",
-			address:   "localhost:8080",
+			host:      "localhost",
+			port:      "8000",
 		},
 		{
 			name:      "Err to do request",
-			token:     tok,
 			mock:      func(s *MockSendInterface) {},
 			testEvent: "test",
 			wantErr:   errors.New("err do request"),
@@ -215,11 +216,11 @@ func TestSenderGetData(t *testing.T) {
 		},
 		{
 			name:      "Empty hash key",
-			token:     tok,
 			mock:      func(s *MockSendInterface) {},
 			testEvent: "test",
 			wantErr:   errors.New("Empty hash key "),
-			address:   "localhost:8080",
+			host:      "localhost",
+			port:      "8000",
 		},
 	}
 
@@ -228,21 +229,32 @@ func TestSenderGetData(t *testing.T) {
 			c := gomock.NewController(t)
 			defer c.Finish()
 
+			cfg := &client.ClientConfig{
+				Host:          test.host,
+				Port:          test.port,
+				PublicKeyPath: "./public.rsa",
+				HashKey:       test.hashKey,
+			}
+
+			sender, err := NewSender(cfg)
+			require.NoError(t, err)
+
 			s := NewMockSendInterface(c)
 			test.mock(s)
 
-			sss := &Sender{token: test.token, hashKey: test.hashKey, client: http.DefaultClient,
-				address: test.address}
+			token, err := sender.getTokenForTest("login")
+			require.NoError(t, err)
 
-			if _, err := sss.GetDataRequest(test.testEvent); (err != nil) != (test.wantErr != nil) {
-				t.Errorf("GetDataRequest() error = %v, wantErr %v", err, (test.wantErr != nil))
+			sender.token = token
+
+			if _, err := sender.GetDataRequest(test.testEvent); (err != nil) != (test.wantErr != nil) {
+				t.Errorf("GetDataRequest() error = %v, wantErr %v", err, test.wantErr != nil)
 			}
 		})
 	}
 }
 
 func TestSenderDeleteData(t *testing.T) {
-	const tok = "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjE3NTA4MDU0MzEsIlVzZXJJRCI6MTV9.MJhrMEyqIMfD9mfMEHl75iNvT34tBKwntYPo7dFEZvA"
 	type mockBehaviour func(s *MockSendInterface)
 	tests := []struct {
 		name      string
@@ -252,47 +264,50 @@ func TestSenderDeleteData(t *testing.T) {
 		wantErr   error
 		hashKey   string
 		address   string
+		host      string
+		port      string
 	}{
 		{
 			name:      "Ok",
-			token:     tok,
 			mock:      func(s *MockSendInterface) {},
-			testEvent: "testing",
+			testEvent: "testPostData",
 			wantErr:   nil,
 			hashKey:   "some",
-			address:   "localhost:8080",
-		},
-		{
-			name:      "Empty token",
-			mock:      func(s *MockSendInterface) {},
-			testEvent: "testing",
-			wantErr:   errors.New("Token is empty, try to login "),
-			hashKey:   "some",
-			address:   "localhost:8080",
+			host:      "localhost",
+			port:      "8000",
 		},
 		{
 			name:      "err to do request",
-			token:     tok,
 			mock:      func(s *MockSendInterface) {},
-			testEvent: "testing",
+			testEvent: "testPostData",
 			wantErr:   errors.New("err to do request"),
-			hashKey:   "some",
 		},
 	}
-
 	for _, test := range tests {
 		t.Run(test.name, func(t *testing.T) {
 			c := gomock.NewController(t)
 			defer c.Finish()
 
+			cfg := &client.ClientConfig{
+				Host:          test.host,
+				Port:          test.port,
+				PublicKeyPath: "./public.rsa",
+				HashKey:       test.hashKey,
+			}
+
+			sender, err := NewSender(cfg)
+			require.NoError(t, err)
+
 			s := NewMockSendInterface(c)
 			test.mock(s)
 
-			sss := &Sender{token: test.token, hashKey: test.hashKey, client: http.DefaultClient,
-				address: test.address}
+			token, err := sender.getTokenForTest("login")
+			require.NoError(t, err)
 
-			if err := sss.DeleteDataRequest(test.testEvent); (err != nil) != (test.wantErr != nil) {
-				t.Errorf("DeleteDataRequest() error = %v, wantErr %v", err, (test.wantErr != nil))
+			sender.token = token
+
+			if err := sender.DeleteDataRequest(test.testEvent); (err != nil) != (test.wantErr != nil) {
+				t.Errorf("DeleteDataRequest() error = %v, wantErr %v", err, test.wantErr != nil)
 			}
 		})
 	}

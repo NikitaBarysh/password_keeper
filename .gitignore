@@ -1,12 +1,9 @@
-.env
+#.env
 
 .DS_store
 
 database/
 
-private.rsa
-
-public.rsa
 
 project_log.log
 
@@ -14,5 +11,6 @@ project_log.log
 .idea
 .vscode
 
-
-.DS_Store
+.database
+/project_logs.log
+/tests/project_logs.log

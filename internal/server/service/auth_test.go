@@ -3,9 +3,10 @@ package service
 import (
 	"context"
 	"errors"
-	"math/rand"
-	"strconv"
+	"os"
 	"testing"
+
+	_ "github.com/lib/pq"
 
 	"github.com/golang/mock/gomock"
 	"github.com/stretchr/testify/require"
@@ -13,6 +14,21 @@ import (
 	"password_keeper/internal/common/entity"
 	"password_keeper/internal/server/repository"
 )
+
+const (
+	defaultDBHost     = "localhost"
+	defaultDBPort     = "5432"
+	defaultDBUser     = "postgres"
+	defaultDBPassword = "qwerty"
+	defaultDBName     = "postgres"
+)
+
+func getEnv(key, defaultValue string) string {
+	if value, exists := os.LookupEnv(key); exists {
+		return value
+	}
+	return defaultValue
+}
 
 func TestServiceCreateUser(t *testing.T) {
 	type mockBehaviour func(s *MockAuthorizationService)
@@ -28,7 +44,7 @@ func TestServiceCreateUser(t *testing.T) {
 			name:          "success",
 			mockBehaviour: func(s *MockAuthorizationService) {},
 			user: entity.User{
-				Login:    strconv.Itoa(rand.Int()),
+				Login:    "testSignUpService",
 				Password: "test",
 			},
 			wantErr: nil,
@@ -37,7 +53,7 @@ func TestServiceCreateUser(t *testing.T) {
 			name:          "err to create",
 			mockBehaviour: func(s *MockAuthorizationService) {},
 			user: entity.User{
-				Login:    "nikita24",
+				Login:    "testSignUpService",
 				Password: "test",
 			},
 			wantErr: errors.New("this login is busy"),
@@ -48,9 +64,15 @@ func TestServiceCreateUser(t *testing.T) {
 			c := gomock.NewController(t)
 			defer c.Finish()
 
-			cfg := server.NewServConfig()
+			cfg := server.NewServConfig(
+				server.WithDBAddress(getEnv("DB_HOST", defaultDBHost)),
+				server.WithDBPort(getEnv("DB_PORT", defaultDBPort)),
+				server.WithDBUsername(getEnv("DB_USER", defaultDBUser)),
+				server.WithDBPassword(getEnv("DB_PASSWORD", defaultDBPassword)),
+				server.WithDBDatabase(getEnv("DB_NAME", defaultDBName)),
+			)
 
-			db, err := repository.InitDataBase(ctx, cfg.DataBaseDSN)
+			db, err := repository.InitDataBase(ctx, cfg.DBHost, cfg.DBPort, cfg.DBDatabase, cfg.DBUsername, cfg.DBPassword)
 			require.NoError(t, err)
 
 			defer db.Close()
@@ -63,7 +85,7 @@ func TestServiceCreateUser(t *testing.T) {
 			service := NewAuthService(rep, cfg)
 
 			if _, err := service.CreateUser(ctx, test.user); (err != nil) != (test.wantErr != nil) {
-				t.Errorf("CreateUser() error = %v, wantErr %v", err, (test.wantErr != nil))
+				t.Errorf("CreateUser() error = %v, wantErr %v", err, test.wantErr != nil)
 			}
 
 		})
@@ -93,7 +115,7 @@ func TestServiceValidateLogin(t *testing.T) {
 			name:          "err to create",
 			mockBehaviour: func(s *MockAuthorizationService) {},
 			user: entity.User{
-				Login:    "nikita24",
+				Login:    "testSignUpService",
 				Password: "test",
 			},
 			wantErr: errors.New("this login is busy"),
@@ -104,9 +126,15 @@ func TestServiceValidateLogin(t *testing.T) {
 			c := gomock.NewController(t)
 			defer c.Finish()
 
-			cfg := server.NewServConfig()
+			cfg := server.NewServConfig(
+				server.WithDBAddress(getEnv("DB_HOST", defaultDBHost)),
+				server.WithDBPort(getEnv("DB_PORT", defaultDBPort)),
+				server.WithDBUsername(getEnv("DB_USER", defaultDBUser)),
+				server.WithDBPassword(getEnv("DB_PASSWORD", defaultDBPassword)),
+				server.WithDBDatabase(getEnv("DB_NAME", defaultDBName)),
+			)
 
-			db, err := repository.InitDataBase(ctx, cfg.DataBaseDSN)
+			db, err := repository.InitDataBase(ctx, cfg.DBHost, cfg.DBPort, cfg.DBDatabase, cfg.DBUsername, cfg.DBPassword)
 			require.NoError(t, err)
 
 			defer db.Close()
@@ -119,7 +147,7 @@ func TestServiceValidateLogin(t *testing.T) {
 			service := NewAuthService(rep, cfg)
 
 			if err := service.ValidateLogin(ctx, test.user); (err != nil) != (test.wantErr != nil) {
-				t.Errorf("ValidateLogin() error = %v, wantErr %v", err, (test.wantErr != nil))
+				t.Errorf("ValidateLogin() error = %v, wantErr %v", err, test.wantErr != nil)
 			}
 
 		})
@@ -140,9 +168,8 @@ func TestServiceCheckData(t *testing.T) {
 			name:          "success",
 			mockBehaviour: func(s *MockAuthorizationService) {},
 			user: entity.User{
-
-				Login:    "admin",
-				Password: "admin",
+				Login:    "testSignUpService",
+				Password: "test",
 			},
 			wantErr: nil,
 		},
@@ -161,9 +188,15 @@ func TestServiceCheckData(t *testing.T) {
 			c := gomock.NewController(t)
 			defer c.Finish()
 
-			cfg := server.NewServConfig()
+			cfg := server.NewServConfig(
+				server.WithDBAddress(getEnv("DB_HOST", defaultDBHost)),
+				server.WithDBPort(getEnv("DB_PORT", defaultDBPort)),
+				server.WithDBUsername(getEnv("DB_USER", defaultDBUser)),
+				server.WithDBPassword(getEnv("DB_PASSWORD", defaultDBPassword)),
+				server.WithDBDatabase(getEnv("DB_NAME", defaultDBName)),
+			)
 
-			db, err := repository.InitDataBase(ctx, cfg.DataBaseDSN)
+			db, err := repository.InitDataBase(ctx, cfg.DBHost, cfg.DBPort, cfg.DBDatabase, cfg.DBUsername, cfg.DBPassword)
 			require.NoError(t, err)
 
 			defer db.Close()
@@ -176,7 +209,7 @@ func TestServiceCheckData(t *testing.T) {
 			service := NewAuthService(rep, cfg)
 
 			if _, err := service.CheckData(ctx, test.user); (err != nil) != (test.wantErr != nil) {
-				t.Errorf("CheckData() error = %v, wantErr %v", err, (test.wantErr != nil))
+				t.Errorf("CheckData() error = %v, wantErr %v", err, test.wantErr != nil)
 			}
 
 		})
@@ -205,9 +238,15 @@ func TestGenerateJWT(t *testing.T) {
 			c := gomock.NewController(t)
 			defer c.Finish()
 
-			cfg := server.NewServConfig()
+			cfg := server.NewServConfig(
+				server.WithDBAddress(getEnv("DB_HOST", defaultDBHost)),
+				server.WithDBPort(getEnv("DB_PORT", defaultDBPort)),
+				server.WithDBUsername(getEnv("DB_USER", defaultDBUser)),
+				server.WithDBPassword(getEnv("DB_PASSWORD", defaultDBPassword)),
+				server.WithDBDatabase(getEnv("DB_NAME", defaultDBName)),
+			)
 
-			db, err := repository.InitDataBase(ctx, cfg.DataBaseDSN)
+			db, err := repository.InitDataBase(ctx, cfg.DBHost, cfg.DBPort, cfg.DBDatabase, cfg.DBUsername, cfg.DBPassword)
 			require.NoError(t, err)
 
 			defer db.Close()
@@ -220,9 +259,8 @@ func TestGenerateJWT(t *testing.T) {
 			service := NewAuthService(rep, cfg)
 
 			if _, err := service.GenerateJWTToken(test.userID); (err != nil) != (test.wantErr != nil) {
-				t.Errorf("GenerateJWT error = %v, wantErr %v", err, (test.wantErr != nil))
+				t.Errorf("GenerateJWT error = %v, wantErr %v", err, test.wantErr != nil)
 			}
-
 		})
 	}
 }

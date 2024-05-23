@@ -1,3 +1,4 @@
+// Package encryption - пакет, в котором происходит шифрование данных
 package encryption
 
 import (
@@ -7,6 +8,7 @@ import (
 	"net/http"
 )
 
+// DecryptMiddleware - middleware, который расшифровывает входящие данные авторизации по ручке
 func DecryptMiddleware(h http.Handler) http.Handler {
 	return http.HandlerFunc(func(rw http.ResponseWriter, r *http.Request) {
 		if dataDecryptor != nil {
@@ -14,8 +16,8 @@ func DecryptMiddleware(h http.Handler) http.Handler {
 
 			msg, err := dataDecryptor.Decrypt(buf)
 			if err != nil {
-				log.Printf("Error decrypting message: %s", err)
-				http.Error(rw, "Error decrypting message", http.StatusBadRequest)
+				log.Printf("DecryptMiddleware: error decrypting message: %s", err)
+				http.Error(rw, "DecryptMiddleware: error decrypting message", http.StatusBadRequest)
 				return
 			}
 

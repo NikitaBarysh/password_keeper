@@ -5,6 +5,8 @@ import (
 	"errors"
 	"testing"
 
+	_ "github.com/lib/pq"
+
 	"github.com/golang/mock/gomock"
 	"github.com/stretchr/testify/require"
 	"password_keeper/config/server"
@@ -45,9 +47,15 @@ func TestSetData(t *testing.T) {
 			c := gomock.NewController(t)
 			defer c.Finish()
 
-			cfg := server.NewServConfig()
+			cfg := server.NewServConfig(
+				server.WithDBAddress(getEnv("DB_HOST", defaultDBHost)),
+				server.WithDBPort(getEnv("DB_PORT", defaultDBPort)),
+				server.WithDBUsername(getEnv("DB_USER", defaultDBUser)),
+				server.WithDBPassword(getEnv("DB_PASSWORD", defaultDBPassword)),
+				server.WithDBDatabase(getEnv("DB_NAME", defaultDBName)),
+			)
 
-			db, err := repository.InitDataBase(ctx, cfg.DataBaseDSN)
+			db, err := repository.InitDataBase(ctx, cfg.DBHost, cfg.DBPort, cfg.DBDatabase, cfg.DBUsername, cfg.DBPassword)
 			require.NoError(t, err)
 
 			defer db.Close()
@@ -60,7 +68,7 @@ func TestSetData(t *testing.T) {
 			service := NewDataService(rep)
 
 			if err = service.SetData(test.id, test.testData, test.testEvent); (err != nil) != (test.wantErr != nil) {
-				t.Errorf("SetData error = %v, wantErr %v", err, (test.wantErr != nil))
+				t.Errorf("SetData error = %v, wantErr %v", err, test.wantErr != nil)
 			}
 
 		})
@@ -97,9 +105,15 @@ func TestGetData(t *testing.T) {
 			c := gomock.NewController(t)
 			defer c.Finish()
 
-			cfg := server.NewServConfig()
+			cfg := server.NewServConfig(
+				server.WithDBAddress(getEnv("DB_HOST", defaultDBHost)),
+				server.WithDBPort(getEnv("DB_PORT", defaultDBPort)),
+				server.WithDBUsername(getEnv("DB_USER", defaultDBUser)),
+				server.WithDBPassword(getEnv("DB_PASSWORD", defaultDBPassword)),
+				server.WithDBDatabase(getEnv("DB_NAME", defaultDBName)),
+			)
 
-			db, err := repository.InitDataBase(ctx, cfg.DataBaseDSN)
+			db, err := repository.InitDataBase(ctx, cfg.DBHost, cfg.DBPort, cfg.DBDatabase, cfg.DBUsername, cfg.DBPassword)
 			require.NoError(t, err)
 
 			defer db.Close()
@@ -112,7 +126,7 @@ func TestGetData(t *testing.T) {
 			service := NewDataService(rep)
 
 			if _, err = service.GetData(test.id, test.testEvent); (err != nil) != (test.wantErr != nil) {
-				t.Errorf("GetData() error = %v, wantErr %v", err, (test.wantErr != nil))
+				t.Errorf("GetData() error = %v, wantErr %v", err, test.wantErr != nil)
 			}
 
 		})
@@ -149,9 +163,15 @@ func TestDeleteData(t *testing.T) {
 			c := gomock.NewController(t)
 			defer c.Finish()
 
-			cfg := server.NewServConfig()
+			cfg := server.NewServConfig(
+				server.WithDBAddress(getEnv("DB_HOST", defaultDBHost)),
+				server.WithDBPort(getEnv("DB_PORT", defaultDBPort)),
+				server.WithDBUsername(getEnv("DB_USER", defaultDBUser)),
+				server.WithDBPassword(getEnv("DB_PASSWORD", defaultDBPassword)),
+				server.WithDBDatabase(getEnv("DB_NAME", defaultDBName)),
+			)
 
-			db, err := repository.InitDataBase(ctx, cfg.DataBaseDSN)
+			db, err := repository.InitDataBase(ctx, cfg.DBHost, cfg.DBPort, cfg.DBDatabase, cfg.DBUsername, cfg.DBPassword)
 			require.NoError(t, err)
 
 			defer db.Close()
@@ -164,7 +184,7 @@ func TestDeleteData(t *testing.T) {
 			service := NewDataService(rep)
 
 			if err = service.DeleteData(test.id, test.testEvent); (err != nil) != (test.wantErr != nil) {
-				t.Errorf("GetData() error = %v, wantErr %v", err, (test.wantErr != nil))
+				t.Errorf("GetData() error = %v, wantErr %v", err, test.wantErr != nil)
 			}
 
 		})

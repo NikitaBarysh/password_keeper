@@ -1,21 +1,41 @@
 version: '3'
 
 services:
-  db:
+  postgres:
     image: postgres
-    restart: always
-    container_name: db_keeper
     environment:
       POSTGRES_PASSWORD: qwerty
-      POSTGRES_USER: postgres
-    volumes:
-      - /var/lib/postgresql/data
     ports:
-      - "5436:5432"
+      - "5432:5432"
 
 
-  adminer:
-    image: adminer
-    restart: always
-    ports:
-      - 8000:8080
+#  server:
+#    build:
+#      dockerfile: ./Dockerfile
+#      args:
+#        PORT: 8000
+#        SERVICE: server/main.go
+#    command:
+#      - ./app
+#      - ./wait-for-postgres.sh postgres ./password-keeper
+#    ports:
+#      - "8000:8000"
+#    depends_on:
+#      - db-postgres
+#    environment:
+#      DB_HOST: "db-postgres"
+#      DB_PORT: "5432"
+#      DB_DATABASE: "postgres"
+#      DB_USERNAME: "postgres"
+#      DB_PASSWORD: "qwerty"
+
+#  client:
+#    build:
+#      dockerfile: ./Dockerfile
+#      args:
+#        SERVICE: client/main.go
+#        COMMAND: client
+#    command:
+#      - ./client
+#    environment:
+#      RUN_ADDRESS: "server"
