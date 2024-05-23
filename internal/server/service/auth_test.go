@@ -14,7 +14,7 @@ import (
 	"password_keeper/internal/server/repository"
 )
 
-const dbAddress = "localhost"
+const dbAddress = "postgres"
 
 func TestServiceCreateUser(t *testing.T) {
 	type mockBehaviour func(s *MockAuthorizationService)
