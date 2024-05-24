@@ -11,6 +11,7 @@ import (
 	"password_keeper/internal/common/entity"
 )
 
+// TODO сделать кейсы с ошибками
 func (s *APITestSuite) TestESetData() {
 	r := s.Require()
 	rctx := chi.NewRouter()
@@ -76,7 +77,34 @@ func (s *APITestSuite) TestFGetData() {
 	r.Equal(http.StatusOK, res.Result().StatusCode)
 }
 
-func (s *APITestSuite) TestGDeleteData() {
+func (s *APITestSuite) TestGGetData() {
+	r := s.Require()
+	rctx := chi.NewRouter()
+	s.handler.Register(rctx)
+
+	login, password := "testingSetData", "testingSetData"
+	pass := s.serv.GeneratePasswordHash(password)
+	user := entity.User{Login: login, Password: pass}
+
+	id, err := s.serv.CheckData(context.Background(), user)
+	if err != nil {
+		s.Fail("Error checking data: " + err.Error())
+	}
+
+	jwt, err := s.serv.GenerateJWTToken(id)
+	if err != nil {
+		s.Fail("Error generating JWT: " + err.Error())
+	}
+	testEvent := "fakeEvent"
+	req := httptest.NewRequest("GET", "/api/get/"+testEvent, nil)
+	req.Header.Set("Authorization", "Bearer "+jwt)
+	res := httptest.NewRecorder()
+
+	rctx.ServeHTTP(res, req)
+	r.Equal(http.StatusInternalServerError, res.Result().StatusCode)
+}
+
+func (s *APITestSuite) TestHDeleteData() {
 	r := s.Require()
 	rctx := chi.NewRouter()
 	s.handler.Register(rctx)
