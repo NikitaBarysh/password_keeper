@@ -52,7 +52,7 @@ func (s *APITestSuite) TestASignUp() {
 		s.FailNow("Failed to get user", err)
 	}
 
-	r.Equal(2, id) // TODO менять id на 2 для локальных тестов, на 6 для github action
+	r.Equal(6, id) // TODO менять id на 2 для локальных тестов, на 6 для github action
 
 	err = s.rep.Validate(context.Background(), login)
 	s.EqualError(err, "Validate: err to get id: %!w(<nil>) ")
