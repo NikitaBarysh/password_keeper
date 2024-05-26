@@ -11,7 +11,6 @@ import (
 	"password_keeper/internal/common/entity"
 )
 
-// TODO сделать кейсы с ошибками
 func (s *APITestSuite) TestESetData() {
 	r := s.Require()
 	rctx := chi.NewRouter()

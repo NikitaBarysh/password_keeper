@@ -26,7 +26,7 @@ func InitDecryptor(file string) error {
 		return fmt.Errorf("InitDecryptor: err to read file: %w", err)
 	}
 
-	keyBlock, _ := pem.Decode([]byte(key))
+	keyBlock, _ := pem.Decode(key)
 	if keyBlock == nil {
 		return fmt.Errorf("InitDecryptor: err to decode private key")
 	}

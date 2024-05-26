@@ -23,7 +23,7 @@ func InitEncryptor(file string) (*Encryptor, error) {
 		return nil, fmt.Errorf("InitEncryptor: failed to read encryption file: %w", err)
 	}
 
-	keyBlock, _ := pem.Decode([]byte(key))
+	keyBlock, _ := pem.Decode(key)
 	if keyBlock == nil {
 		return nil, fmt.Errorf("InitEncryptor: empty key")
 	}

@@ -3,8 +3,10 @@ package handler
 import (
 	"io"
 	"net/http"
+	"time"
 
 	_ "password_keeper/cmd/server/docs"
+	"password_keeper/internal/common/metrics"
 
 	"github.com/go-chi/chi/v5"
 )
@@ -22,11 +24,19 @@ import (
 // @Router api/set/{event} [post]
 
 func (h *Handler) SetData(rw http.ResponseWriter, r *http.Request) {
+	var statusCode int
+	start := time.Now()
+	defer func() {
+		metrics.IncRequestStatus(r.URL.Path, statusCode)
+		metrics.IncRequestDuration(r.URL.Path, time.Since(start))
+	}()
+
 	eventType := chi.URLParam(r, "event")
 
 	b, err := io.ReadAll(r.Body)
 	if err != nil {
-		http.Error(rw, "err to get body", http.StatusBadRequest)
+		statusCode = http.StatusBadRequest
+		http.Error(rw, "err to get body", statusCode)
 		return
 	}
 
@@ -34,11 +44,13 @@ func (h *Handler) SetData(rw http.ResponseWriter, r *http.Request) {
 
 	err = h.service.DataServiceInterface.SetData(currUser, b, eventType)
 	if err != nil {
-		http.Error(rw, "err to set data", http.StatusInternalServerError)
+		statusCode = http.StatusInternalServerError
+		http.Error(rw, "err to set data", statusCode)
 		return
 	}
 
-	rw.WriteHeader(http.StatusCreated)
+	statusCode = http.StatusCreated
+	rw.WriteHeader(statusCode)
 	rw.Write([]byte("added"))
 }
 
@@ -52,16 +64,25 @@ func (h *Handler) SetData(rw http.ResponseWriter, r *http.Request) {
 // @Failure 500 {string} err to get data
 // @Router api/get/{event} [get]
 func (h *Handler) getData(rw http.ResponseWriter, r *http.Request) {
+	var statusCode int
+	start := time.Now()
+	defer func() {
+		metrics.IncRequestStatus(r.URL.Path, statusCode)
+		metrics.IncRequestDuration(r.URL.Path, time.Since(start))
+	}()
+
 	eventType := chi.URLParam(r, "event")
 	currUser := r.Context().Value("user").(int)
 
 	data, err := h.service.DataServiceInterface.GetData(currUser, eventType)
 	if err != nil {
-		http.Error(rw, "err to get data", http.StatusInternalServerError)
+		statusCode = http.StatusInternalServerError
+		http.Error(rw, "err to get data", statusCode)
 		return
 	}
 
-	rw.WriteHeader(http.StatusOK)
+	statusCode = http.StatusOK
+	rw.WriteHeader(statusCode)
 	rw.Write(data)
 }
 
@@ -75,14 +96,23 @@ func (h *Handler) getData(rw http.ResponseWriter, r *http.Request) {
 // @Router api/delete/{event} [get]
 
 func (h *Handler) deleteData(rw http.ResponseWriter, r *http.Request) {
+	var statusCode int
+	start := time.Now()
+	defer func() {
+		metrics.IncRequestStatus(r.URL.Path, statusCode)
+		metrics.IncRequestDuration(r.URL.Path, time.Since(start))
+	}()
+
 	eventType := chi.URLParam(r, "event")
 	currUser := r.Context().Value("user").(int)
 
 	err := h.service.DataServiceInterface.DeleteData(currUser, eventType)
 	if err != nil {
-		http.Error(rw, "err to delete data", http.StatusInternalServerError)
+		statusCode = http.StatusInternalServerError
+		http.Error(rw, "err to delete data", statusCode)
 		return
 	}
 
-	rw.WriteHeader(http.StatusNoContent)
+	statusCode = http.StatusNoContent
+	rw.WriteHeader(statusCode)
 }

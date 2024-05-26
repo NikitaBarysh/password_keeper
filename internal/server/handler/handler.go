@@ -27,7 +27,7 @@ func (h *Handler) Register(router *chi.Mux) {
 
 		router.Route("/", func(router chi.Router) {
 			router.Use(encryption.DecryptMiddleware)
-			router.Post("/register", h.singUp)
+			router.Post("/register", h.signUp)
 			router.Post("/login", h.singIn)
 		})
 
