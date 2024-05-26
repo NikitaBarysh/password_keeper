@@ -1,0 +1,28 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: password-keeper
+spec:
+  replicas: 3
+  selector:
+    matchLabels:
+      app: password-keeper
+  template:
+    metadata:
+      labels:
+        app: password-keeper
+    spec:
+      containers:
+        - name: password-keeper
+          image: nikbarysh24/password-keeper-server
+          ports:
+            - containerPort: 8000
+          env:
+            - name: DATABASE_URL
+              valueFrom:
+                configMapKeyRef:
+                  name: password-keeper-config
+                  key: database-url
+
+      imagePullSecrets:
+        - name: new-regcred
