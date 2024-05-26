@@ -4,7 +4,6 @@ import (
 	"net/http"
 
 	httpSwagger "github.com/swaggo/http-swagger"
-	"password_keeper/internal/common/encryption"
 	"password_keeper/internal/common/logger"
 	"password_keeper/internal/server/service"
 
@@ -26,8 +25,8 @@ func (h *Handler) Register(router *chi.Mux) {
 		router.Use(logger.LoggingMiddleware)
 
 		router.Route("/", func(router chi.Router) {
-			router.Use(encryption.DecryptMiddleware)
-			router.Post("/register", h.singUp)
+			//router.Use(encryption.DecryptMiddleware)
+			router.Post("/register", h.signUp)
 			router.Post("/login", h.singIn)
 		})
 

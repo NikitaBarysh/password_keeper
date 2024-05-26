@@ -8,6 +8,7 @@ import (
 	"syscall"
 
 	_ "github.com/lib/pq"
+	"password_keeper/internal/common/metrics"
 
 	"github.com/go-chi/chi/v5"
 	"password_keeper/config/server"
@@ -61,6 +62,11 @@ func main() {
 	newHandler := handler.NewHandler(newService)
 
 	newHandler.Register(router)
+
+	go func() {
+		_ = metrics.Listen("localhost:8082")
+	}()
+	logging.Info("Metric server listening on localhost:8082/metrics")
 
 	srv := new(app.Server)
 	go func() {

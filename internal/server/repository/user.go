@@ -5,9 +5,11 @@ import (
 	"context"
 	"database/sql"
 	"fmt"
+	"time"
 
 	"github.com/jmoiron/sqlx"
 	"password_keeper/internal/common/entity"
+	"password_keeper/internal/common/metrics"
 )
 
 // AuthRepository - структура, в которой лежит сущность базы
@@ -24,6 +26,11 @@ func NewAuthRepository(newDB *sqlx.DB) *AuthRepository {
 
 // SetUserDB - добавляем нового пользователя в базу
 func (r *AuthRepository) SetUserDB(ctx context.Context, user entity.User) (int, error) {
+	start := time.Now()
+	defer func() {
+		metrics.IncDBRequestStatus("SetUserDB", time.Since(start))
+	}()
+
 	var id int
 
 	tx, err := r.rep.Beginx()
@@ -60,6 +67,11 @@ func (r *AuthRepository) SetUserDB(ctx context.Context, user entity.User) (int, 
 
 // GetUserFromDB - получаем id пользователя из базы
 func (r *AuthRepository) GetUserFromDB(ctx context.Context, user entity.User) (int, error) {
+	start := time.Now()
+	defer func() {
+		metrics.IncDBRequestStatus("GetUserFromDB", time.Since(start))
+	}()
+
 	var id int
 
 	tx, err := r.rep.Beginx()
@@ -88,6 +100,11 @@ func (r *AuthRepository) GetUserFromDB(ctx context.Context, user entity.User) (i
 
 // Validate - проверяем на наличие логина в базе
 func (r *AuthRepository) Validate(ctx context.Context, username string) error {
+	start := time.Now()
+	defer func() {
+		metrics.IncDBRequestStatus("Validate", time.Since(start))
+	}()
+
 	var id int
 
 	row := r.rep.QueryRowxContext(ctx, "SELECT id FROM users WHERE login=$1", username)

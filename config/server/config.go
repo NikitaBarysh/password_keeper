@@ -1,4 +1,4 @@
-// Package client - это пакет c конфигом для сервера
+// Package server - это пакет c конфигом для сервера
 package server
 
 import (

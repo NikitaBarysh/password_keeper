@@ -107,7 +107,7 @@ func TestSignUp(t *testing.T) {
 
 			handler := NewHandler(serv)
 
-			handler.singUp(rw, req)
+			handler.signUp(rw, req)
 
 			res := rw.Result()
 			assert.Equal(t, test.expectedStatusCode, res.StatusCode)

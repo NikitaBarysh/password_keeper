@@ -1,4 +1,4 @@
-// Package server -пакет в котором создаем конфиг для клиента
+// Package client -пакет в котором создаем конфиг для клиента
 package client
 
 import (
